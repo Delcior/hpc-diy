@@ -24,6 +24,7 @@ jobs:
         run: |
           for file in users/*.yml; do
             for key in $(yq '.ssh_keys[]' "$file"); do
+              echo "$key"
               echo "$key" | ssh-keygen -l -f -
               echo "$key" | ssh-keygen -l -f - >/dev/null 2>&1 \
                 || { echo "Invalid SSH key in $file"; exit 1; }
