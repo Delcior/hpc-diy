@@ -1,7 +1,8 @@
 name: Validate User Definitions
 
 on:
-  pull_request:
+  pull_request: 
+      branches: [ main ]
 
 jobs:
   validate:
@@ -9,12 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: sudo apt-get install -y ssh-keygen
-
       - name: Validate usernames
         run: |
-          for file in infrastructure/users/*.yml; do
+          for file in users/*.yml; do
             username=$(yq '.username' "$file")
             if ! [[ "$username" =~ ^[a-z_][a-z0-9_-]*$ ]]; then
               echo "Invalid username: $username"
@@ -22,12 +20,10 @@ jobs:
             fi
           done
 
-      - name: Validate SSH keys
+      - name: Validate SSH key
         run: |
-          for file in infrastructure/users/*.yml; do
-            for key in $(yq '.ssh_keys[]' "$file"); do
-              echo "$key" | ssh-keygen -l -f - >/dev/null 2>&1 \
+          for file in users/*.yml; do
+            yq '.ssh_key' "$file" | ssh-keygen -l -f - >/dev/null 2>&1 \
                 || { echo "Invalid SSH key in $file"; exit 1; }
-            done
           done
 
