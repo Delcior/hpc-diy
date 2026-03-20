@@ -1,0 +1,61 @@
+---
+- name: Sync user identity across Slurm nodes
+  hosts: all
+  become: true
+  gather_facts: false
+
+  vars:
+    sync_user: "{{ sync_user | default('')  }}"
+    sync_ssh_key: true
+    ssh_pubkey_path: "{{ lookup('env', 'HOME') + '/.ssh/id_ed25519.pub' }}"
+    default_shell: /bin/bash
+    local_uid: "{{ lookup('ansible.builtin.pipe', 'id -u ' ~ sync_user) | int }}"
+    local_gid: "{{ lookup('ansible.builtin.pipe', 'id -g ' ~ sync_user) | int }}"
+    local_group: "{{ lookup('ansible.builtin.pipe', 'id -gn ' ~ sync_user) }}"
+    local_home: "/home/{{ sync_user }}"
+
+  tasks:
+    - name: Validate sync_user is provided
+      ansible.builtin.assert:
+        that:
+          - sync_user is defined
+          - sync_user | length > 0
+        fail_msg: "Set sync_user (for example with -e sync_user=kderlatka)."
+
+    - name: Validate UID and GID from control node
+      ansible.builtin.assert:
+        that:
+          - local_uid > 0
+          - local_gid > 0
+        fail_msg: "Could not resolve UID/GID for {{ sync_user }} on control node."
+
+    - name: Ensure primary group exists with matching GID
+      ansible.builtin.group:
+        name: "{{ local_group }}"
+        gid: "{{ local_gid }}"
+        state: present
+
+    - name: Ensure user exists with matching UID and GID
+      ansible.builtin.user:
+        name: "{{ sync_user }}"
+        uid: "{{ local_uid }}"
+        group: "{{ local_group }}"
+        home: "{{ local_home }}"
+        shell: "{{ default_shell }}"
+        create_home: true
+        state: present
+
+    - name: Ensure SSH directory exists
+      ansible.builtin.file:
+        path: "{{ local_home }}/.ssh"
+        state: directory
+        owner: "{{ sync_user }}"
+        group: "{{ local_group }}"
+        mode: "0700"
+
+    - name: Install control node public key
+      ansible.posix.authorized_key:
+        user: "{{ sync_user }}"
+        state: present
+        key: "{{ lookup('ansible.builtin.file', ssh_pubkey_path) }}"
+      when: sync_ssh_key | bool

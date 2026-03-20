@@ -1,0 +1,201 @@
+---
+- name: Configure minimal Slurm cluster
+  hosts: all
+  become: true
+  vars:
+    cluster_cidr: "192.168.0.0/24"
+    slurm_cluster_name: "hpc-diy"
+    slurmctld_host: "{{ groups['master'][0] }}"
+
+    # Generate once and paste the same value for all nodes:
+    # openssl rand -base64 128
+    munge_key_b64: "PASTE_BASE64_MUNGE_KEY_HERE"
+
+    munge_uid: 981
+    munge_gid: 981
+    slurm_uid: 982
+    slurm_gid: 982
+
+  pre_tasks:
+    - name: Validate munge key variable
+      ansible.builtin.assert:
+        that:
+          - munge_key_b64 != "PASTE_BASE64_MUNGE_KEY_HERE"
+        fail_msg: "Set munge_key_b64 before running this playbook."
+
+  tasks:
+    - name: Ensure system groups exist with fixed GIDs
+      ansible.builtin.group:
+        name: "{{ item.name }}"
+        gid: "{{ item.gid }}"
+        system: true
+        state: present
+      loop:
+        - { name: "munge", gid: "{{ munge_gid }}" }
+        - { name: "slurm", gid: "{{ slurm_gid }}" }
+
+    - name: Ensure system users exist with fixed UIDs
+      ansible.builtin.user:
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}"
+        group: "{{ item.group }}"
+        system: true
+        create_home: false
+        shell: /usr/sbin/nologin
+        state: present
+      loop:
+        - { name: "munge", uid: "{{ munge_uid }}", group: "munge" }
+        - { name: "slurm", uid: "{{ slurm_uid }}", group: "slurm" }
+
+    - name: Install required packages
+      ansible.builtin.apt:
+        update_cache: true
+        state: present
+        name:
+          - chrony
+          - munge
+          - slurm-wlm
+
+    - name: Configure chrony on master
+      ansible.builtin.copy:
+        dest: /etc/chrony/chrony.conf
+        mode: "0644"
+        content: |
+          pool ntp.ubuntu.com iburst
+          pool 0.ubuntu.pool.ntp.org iburst
+          pool 1.ubuntu.pool.ntp.org iburst
+          pool 2.ubuntu.pool.ntp.org iburst
+          allow {{ cluster_cidr }}
+          driftfile /var/lib/chrony/drift
+          makestep 1.0 3
+      when: inventory_hostname in groups['master']
+      notify: Restart chrony
+
+    - name: Configure chrony on workers
+      ansible.builtin.copy:
+        dest: /etc/chrony/chrony.conf
+        mode: "0644"
+        content: |
+          server {{ hostvars[groups['master'][0]].ansible_host | default(groups['master'][0]) }} iburst
+          driftfile /var/lib/chrony/drift
+          makestep 1.0 3
+      when: inventory_hostname in groups['workers']
+      notify: Restart chrony
+
+    - name: Ensure chrony is enabled and running
+      ansible.builtin.service:
+        name: chrony
+        state: started
+        enabled: true
+
+    - name: Install identical munge key on all nodes
+      ansible.builtin.copy:
+        dest: /etc/munge/munge.key
+        content: "{{ munge_key_b64 | b64decode }}"
+        owner: munge
+        group: munge
+        mode: "0400"
+      no_log: true
+      notify: Restart munge
+
+    - name: Ensure munge is enabled and running
+      ansible.builtin.service:
+        name: munge
+        state: started
+        enabled: true
+
+    - name: Ensure Slurm directories exist
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: directory
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
+        mode: "{{ item.mode }}"
+      loop:
+        - { path: "/etc/slurm", owner: "root", group: "root", mode: "0755" }
+        - { path: "/var/spool/slurmctld", owner: "slurm", group: "slurm", mode: "0755" }
+        - { path: "/var/spool/slurmd", owner: "root", group: "root", mode: "0755" }
+        - { path: "/var/log/slurm", owner: "slurm", group: "slurm", mode: "0755" }
+
+    - name: Deploy slurm.conf
+      ansible.builtin.copy:
+        dest: /etc/slurm/slurm.conf
+        mode: "0644"
+        content: |
+          ClusterName={{ slurm_cluster_name }}
+          SlurmctldHost={{ slurmctld_host }}
+          AuthType=auth/munge
+          MpiDefault=none
+          ProctrackType=proctrack/cgroup
+          ReturnToService=2
+          SlurmctldPidFile=/run/slurmctld.pid
+          SlurmdPidFile=/run/slurmd.pid
+          SlurmdSpoolDir=/var/spool/slurmd
+          SlurmUser=slurm
+          StateSaveLocation=/var/spool/slurmctld
+          SwitchType=switch/none
+          TaskPlugin=task/affinity
+          SchedulerType=sched/backfill
+          SelectType=select/cons_tres
+          SelectTypeParameters=CR_Core
+          SlurmctldLogFile=/var/log/slurm/slurmctld.log
+          SlurmdLogFile=/var/log/slurm/slurmd.log
+
+          {% for node in groups['workers'] %}
+          NodeName={{ node }} CPUs=2 State=UNKNOWN
+          {% endfor %}
+          PartitionName=debug Nodes={{ groups['workers'] | join(',') }} Default=YES MaxTime=INFINITE State=UP
+      notify: Restart Slurm daemons
+
+    - name: Enable and start slurmctld on master
+      ansible.builtin.service:
+        name: slurmctld
+        enabled: true
+        state: started
+      when: inventory_hostname in groups['master']
+
+    - name: Disable slurmd on master
+      ansible.builtin.service:
+        name: slurmd
+        enabled: false
+        state: stopped
+      when: inventory_hostname in groups['master']
+
+    - name: Enable and start slurmd on workers
+      ansible.builtin.service:
+        name: slurmd
+        enabled: true
+        state: started
+      when: inventory_hostname in groups['workers']
+
+    - name: Disable slurmctld on workers
+      ansible.builtin.service:
+        name: slurmctld
+        enabled: false
+        state: stopped
+      when: inventory_hostname in groups['workers']
+
+  handlers:
+    - name: Restart chrony
+      ansible.builtin.service:
+        name: chrony
+        state: restarted
+
+    - name: Restart munge
+      ansible.builtin.service:
+        name: munge
+        state: restarted
+
+    - name: Restart Slurm daemons
+      block:
+        - name: Restart slurmctld on master
+          ansible.builtin.service:
+            name: slurmctld
+            state: restarted
+          when: inventory_hostname in groups['master']
+
+        - name: Restart slurmd on workers
+          ansible.builtin.service:
+            name: slurmd
+            state: restarted
+          when: inventory_hostname in groups['workers']
