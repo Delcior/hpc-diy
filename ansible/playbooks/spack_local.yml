@@ -1,0 +1,57 @@
+---
+- name: Install Spack into shared workspace from local host
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  vars:
+    spack_install_dir: /mnt/cluster-workspace/spack
+    spack_repo_url: https://github.com/spack/spack.git
+    spack_repo_version: develop
+
+  pre_tasks:
+    - name: Check that shared workspace mount exists
+      ansible.builtin.stat:
+        path: /mnt/cluster-workspace
+      register: shared_workspace
+
+    - name: Fail when shared workspace is missing
+      ansible.builtin.assert:
+        that:
+          - shared_workspace.stat.exists
+          - shared_workspace.stat.isdir
+        fail_msg: "/mnt/cluster-workspace is missing. Mount shared storage first."
+
+  tasks:
+    - name: Install Spack prerequisites
+      become: true
+      ansible.builtin.apt:
+        name:
+          - git
+          - ca-certificates
+          - curl
+          - build-essential
+        state: present
+        update_cache: true
+
+    - name: Ensure parent directory for Spack exists
+      ansible.builtin.file:
+        path: "{{ spack_install_dir | dirname }}"
+        state: directory
+        mode: "0755"
+
+    - name: Clone or update Spack checkout
+      ansible.builtin.git:
+        repo: "{{ spack_repo_url }}"
+        dest: "{{ spack_install_dir }}"
+        version: "{{ spack_repo_version }}"
+        update: true
+
+    - name: Verify Spack executable is available
+      ansible.builtin.command: "{{ spack_install_dir }}/bin/spack --version"
+      register: spack_version
+      changed_when: false
+
+    - name: Show installed Spack version
+      ansible.builtin.debug:
+        msg: "{{ spack_version.stdout }}"

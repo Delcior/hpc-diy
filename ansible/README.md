@@ -34,6 +34,8 @@ This directory contains Ansible playbooks for setting up the cluster.
   Enables time synchronization on all Slurm hosts.
 - `playbooks/shared_storage.yml`
   Exports a local disk over NFS and mounts it on compute nodes.
+- `playbooks/spack_local.yml`
+  Installs a shared Spack checkout under `/mnt/cluster-workspace/spack` from the local machine.
 - `playbooks/slurm.yml`
   Builds and installs Slurm packages on all cluster nodes.
 - `playbooks/slurm_startup.yml`
@@ -213,6 +215,20 @@ Before starting Slurm, verify that all nodes can resolve:
 - every compute node listed in `playbooks/slurm.conf`
 
 If required, add entries to `/etc/hosts` on the controller and nodes.
+
+### Optional: install Spack into shared storage
+
+If you want a shared Spack checkout under `/mnt/cluster-workspace/spack`, run this playbook directly on the node where you want to manage the checkout:
+
+```bash
+ansible-playbook playbooks/spack_local.yml -K
+```
+
+This playbook:
+
+- uses `connection: local`
+- installs basic Spack prerequisites
+- clones or updates the Spack repository into `/mnt/cluster-workspace/spack`
 
 ### 11. Build and install Slurm
 
