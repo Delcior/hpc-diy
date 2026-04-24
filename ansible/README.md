@@ -254,7 +254,7 @@ ansible-playbook -i inventories/inventory.ini playbooks/slurm_nodes_ubuntu18.yml
 
 It builds Slurm manually on each worker under `/mnt/cluster-workspace/builds/slurm/<hostname>`, installs `slurmd`, and writes a custom systemd unit for the manually installed daemon.
 
-The alternate `playbooks/slurm_deb_build_ubuntu18.yml` path stages Slurm into a custom Debian package and now also installs Slurm's PMI-1/PMI-2 client libraries from `contribs/pmi1` and `contribs/pmi2`, so the resulting package can provide `libpmi.so` and `libpmi2.so` on worker nodes.
+The alternate `playbooks/slurm_deb_build_ubuntu18.yml` path stages Slurm into a custom Debian package and now also installs Slurm's PMI-1/PMI-2 client libraries from `contribs/pmi1` and `contribs/pmi2`, while building Slurm with `--with-pmix` so the resulting package can provide `libpmi.so`, `libpmi2.so`, and the Slurm PMIx plugin on worker nodes.
 
 Run the controller playbook first, then the worker-node playbook.
 

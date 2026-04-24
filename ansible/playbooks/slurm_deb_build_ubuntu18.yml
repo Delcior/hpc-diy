@@ -57,6 +57,7 @@
           - libhttp-parser-dev
           - libcurl4-openssl-dev
           - libdbus-1-dev
+          - libpmix-dev
         state: present
         update_cache: true
 
@@ -101,7 +102,7 @@
         --prefix=/usr
         --sysconfdir={{ slurm_sysconfdir }}
         --with-munge
-        --without-pmix
+        --with-pmix
         --disable-slurmrestd
       args:
         chdir: "{{ slurm_src_dir }}"
@@ -151,6 +152,20 @@
           - packaged_pmi_libs.matched | int >= 2
         fail_msg: "PMI libraries were not staged into {{ slurm_pkg_root }}. The resulting DEB would not provide libpmi/libpmi2."
 
+    - name: Collect packaged PMIx plugins
+      ansible.builtin.find:
+        paths: "{{ slurm_pkg_root }}"
+        patterns:
+          - mpi_pmix*.so*
+        recurse: true
+      register: packaged_pmix_plugins
+
+    - name: Fail when PMIx plugin is missing from package root
+      ansible.builtin.assert:
+        that:
+          - packaged_pmix_plugins.matched | int >= 1
+        fail_msg: "PMIx plugin was not staged into {{ slurm_pkg_root }}. The resulting DEB would not provide Slurm PMIx support."
+
     - name: Ensure systemd unit directory exists in package root
       ansible.builtin.file:
         path: "{{ slurm_pkg_root }}/lib/systemd/system"
@@ -192,11 +207,11 @@
           Section: admin
           Priority: optional
           Architecture: {{ slurm_pkg_arch }}
-          Depends: libc6, munge
+          Depends: libc6, munge, libpmix2 | libpmix-dev
           Maintainer: HPC DIY <noreply@example.com>
           Description: Slurm built from source for Ubuntu 18 arm64
            Locally built Slurm package containing Slurm binaries, libraries,
-            and PMI-1/PMI-2 client libraries.
+            PMI-1/PMI-2 client libraries, and PMIx support.
 
     - name: Add post-install script for systemd reload
       ansible.builtin.copy:
