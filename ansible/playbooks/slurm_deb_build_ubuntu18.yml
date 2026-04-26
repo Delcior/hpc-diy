@@ -17,7 +17,7 @@
     slurm_pkg_root: "{{ slurm_build_root }}/pkgroot"
     slurm_sysconfdir: /etc/slurm
 
-    slurm_pkg_name: slurm-custom-1
+    slurm_pkg_name: slurm-custom
     slurm_pkg_release: "1"
     slurm_pkg_version: "{{ slurm_version }}-{{ slurm_pkg_release }}"
     slurm_pkg_arch: arm64
