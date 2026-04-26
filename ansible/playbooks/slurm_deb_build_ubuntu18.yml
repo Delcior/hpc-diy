@@ -9,7 +9,7 @@
     slurm_tarball: "slurm-{{ slurm_version }}.tar.bz2"
     slurm_download_url: "https://download.schedmd.com/slurm/{{ slurm_tarball }}"
 
-    slurm_build_root: /tmp/slurm-deb-build
+    slurm_build_root: /mnt/cluster-workspace/tmp
     slurm_src_root: "{{ slurm_build_root }}/src"
     slurm_src_dir: "{{ slurm_src_root }}/slurm-{{ slurm_version }}"
     slurm_artifacts_dir: "{{ slurm_build_root }}/artifacts"
@@ -17,7 +17,7 @@
     slurm_pkg_root: "{{ slurm_build_root }}/pkgroot"
     slurm_sysconfdir: /etc/slurm
 
-    slurm_pkg_name: slurm-custom
+    slurm_pkg_name: slurm-custom-1
     slurm_pkg_release: "1"
     slurm_pkg_version: "{{ slurm_version }}-{{ slurm_pkg_release }}"
     slurm_pkg_arch: arm64
@@ -102,7 +102,7 @@
     #     --prefix=/usr
     #     --sysconfdir={{ slurm_sysconfdir }}
     #     --with-munge
-    #     --with-pmix
+    #     --with-pmix=/mnt/cluster-workspace/bin/openmpi-5.0.10/
     #     --disable-slurmrestd
     #   args:
     #     chdir: "{{ slurm_src_dir }}"
