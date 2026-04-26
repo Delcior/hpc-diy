@@ -23,110 +23,110 @@
     slurm_pkg_arch: arm64
 
   tasks:
-    - name: Ensure host is Ubuntu 18
-      ansible.builtin.assert:
-        that:
-          - ansible_distribution == 'Ubuntu'
-          - ansible_distribution_major_version == '18'
-        fail_msg: "This playbook is intended to run on Ubuntu 18 build hosts."
+    # - name: Ensure host is Ubuntu 18
+    #   ansible.builtin.assert:
+    #     that:
+    #       - ansible_distribution == 'Ubuntu'
+    #       - ansible_distribution_major_version == '18'
+    #     fail_msg: "This playbook is intended to run on Ubuntu 18 build hosts."
 
-    - name: Ensure host architecture is arm64/aarch64
-      ansible.builtin.assert:
-        that:
-          - ansible_architecture in ['aarch64', 'arm64']
-        fail_msg: "Build host must be arm64/aarch64 to produce Jetson-compatible packages."
+    # - name: Ensure host architecture is arm64/aarch64
+    #   ansible.builtin.assert:
+    #     that:
+    #       - ansible_architecture in ['aarch64', 'arm64']
+    #     fail_msg: "Build host must be arm64/aarch64 to produce Jetson-compatible packages."
 
-    - name: Install build prerequisites for source build
-      ansible.builtin.apt:
-        name:
-          - build-essential
-          - pkg-config
-          - ca-certificates
-          - wget
-          - bzip2
-          - dpkg-dev
-          - munge
-          - libmunge-dev
-          - libpam0g-dev
-          - libhwloc-dev
-          - libnuma-dev
-          - libreadline-dev
-          - libncurses5-dev
-          - libjson-c-dev
-          - libyaml-dev
-          - libhttp-parser-dev
-          - libcurl4-openssl-dev
-          - libdbus-1-dev
-          - libpmix-dev
-        state: present
-        update_cache: true
+    # - name: Install build prerequisites for source build
+    #   ansible.builtin.apt:
+    #     name:
+    #       - build-essential
+    #       - pkg-config
+    #       - ca-certificates
+    #       - wget
+    #       - bzip2
+    #       - dpkg-dev
+    #       - munge
+    #       - libmunge-dev
+    #       - libpam0g-dev
+    #       - libhwloc-dev
+    #       - libnuma-dev
+    #       - libreadline-dev
+    #       - libncurses5-dev
+    #       - libjson-c-dev
+    #       - libyaml-dev
+    #       - libhttp-parser-dev
+    #       - libcurl4-openssl-dev
+    #       - libdbus-1-dev
+    #       - libpmix-dev
+    #     state: present
+    #     update_cache: true
 
-    - name: Ensure build directories exist
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: directory
-        mode: "0755"
-      loop:
-        - "{{ slurm_build_root }}"
-        - "{{ slurm_src_root }}"
-        - "{{ slurm_artifacts_dir }}"
-        - "{{ slurm_tmp_dir }}"
+    # - name: Ensure build directories exist
+    #   ansible.builtin.file:
+    #     path: "{{ item }}"
+    #     state: directory
+    #     mode: "0755"
+    #   loop:
+    #     - "{{ slurm_build_root }}"
+    #     - "{{ slurm_src_root }}"
+    #     - "{{ slurm_artifacts_dir }}"
+    #     - "{{ slurm_tmp_dir }}"
 
-    - name: Download Slurm source tarball
-      ansible.builtin.get_url:
-        url: "{{ slurm_download_url }}"
-        dest: "{{ slurm_src_root }}/{{ slurm_tarball }}"
-        mode: "0644"
-      environment:
-        TMPDIR: "{{ slurm_tmp_dir }}"
+    # - name: Download Slurm source tarball
+    #   ansible.builtin.get_url:
+    #     url: "{{ slurm_download_url }}"
+    #     dest: "{{ slurm_src_root }}/{{ slurm_tarball }}"
+    #     mode: "0644"
+    #   environment:
+    #     TMPDIR: "{{ slurm_tmp_dir }}"
 
-    - name: Remove previous source and package root directories
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: absent
-      loop:
-        - "{{ slurm_src_dir }}"
-        - "{{ slurm_pkg_root }}"
+    # - name: Remove previous source and package root directories
+    #   ansible.builtin.file:
+    #     path: "{{ item }}"
+    #     state: absent
+    #   loop:
+    #     - "{{ slurm_src_dir }}"
+    #     - "{{ slurm_pkg_root }}"
 
-    - name: Unpack Slurm source
-      ansible.builtin.unarchive:
-        src: "{{ slurm_src_root }}/{{ slurm_tarball }}"
-        dest: "{{ slurm_src_root }}"
-        remote_src: true
-      environment:
-        TMPDIR: "{{ slurm_tmp_dir }}"
+    # - name: Unpack Slurm source
+    #   ansible.builtin.unarchive:
+    #     src: "{{ slurm_src_root }}/{{ slurm_tarball }}"
+    #     dest: "{{ slurm_src_root }}"
+    #     remote_src: true
+    #   environment:
+    #     TMPDIR: "{{ slurm_tmp_dir }}"
 
-    - name: Configure Slurm build (manual)
-      ansible.builtin.command: >-
-        ./configure
-        --prefix=/usr
-        --sysconfdir={{ slurm_sysconfdir }}
-        --with-munge
-        --with-pmix
-        --disable-slurmrestd
-      args:
-        chdir: "{{ slurm_src_dir }}"
-      environment:
-        TMPDIR: "{{ slurm_tmp_dir }}"
+    # - name: Configure Slurm build (manual)
+    #   ansible.builtin.command: >-
+    #     ./configure
+    #     --prefix=/usr
+    #     --sysconfdir={{ slurm_sysconfdir }}
+    #     --with-munge
+    #     --with-pmix
+    #     --disable-slurmrestd
+    #   args:
+    #     chdir: "{{ slurm_src_dir }}"
+    #   environment:
+    #     TMPDIR: "{{ slurm_tmp_dir }}"
 
-    - name: Compile Slurm source
-      ansible.builtin.command: make -j "{{ ansible_processor_vcpus | default(2) }}"
-      args:
-        chdir: "{{ slurm_src_dir }}"
-      environment:
-        TMPDIR: "{{ slurm_tmp_dir }}"
+    # - name: Compile Slurm source
+    #   ansible.builtin.command: make -j "{{ ansible_processor_vcpus | default(2) }}"
+    #   args:
+    #     chdir: "{{ slurm_src_dir }}"
+    #   environment:
+    #     TMPDIR: "{{ slurm_tmp_dir }}"
 
-    - name: Install Slurm into package staging directory
-      ansible.builtin.command: make install DESTDIR={{ slurm_pkg_root }}
-      args:
-        chdir: "{{ slurm_src_dir }}"
-      environment:
-        TMPDIR: "{{ slurm_tmp_dir }}"
+    # - name: Install Slurm into package staging directory
+    #   ansible.builtin.command: make install DESTDIR={{ slurm_pkg_root }}
+    #   args:
+    #     chdir: "{{ slurm_src_dir }}"
+    #   environment:
+    #     TMPDIR: "{{ slurm_tmp_dir }}"
 
     - name: Install PMI-1 client libraries into package staging directory
       ansible.builtin.command: make install DESTDIR={{ slurm_pkg_root }}
       args:
-        chdir: "{{ slurm_src_dir }}/contribs/pmi1"
+        chdir: "{{ slurm_src_dir }}/contribs/pmi"
       environment:
         TMPDIR: "{{ slurm_tmp_dir }}"
 
