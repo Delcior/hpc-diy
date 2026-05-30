@@ -1,0 +1,35 @@
+---
+- name: Sync packages on Ubuntu 18 compute nodes
+  hosts: nodes
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Install GCC 8.5 on Ubuntu 18 nodes
+      block:
+        - name: Ensure host is Ubuntu 18
+          ansible.builtin.assert:
+            that:
+              - ansible_distribution == 'Ubuntu'
+              - ansible_distribution_major_version == '18'
+            fail_msg: "This playbook targets Ubuntu 18 compute hosts only."
+
+        - name: Install GCC 8 packages
+          ansible.builtin.apt:
+            name:
+              - gcc-8
+              - g++-8
+            state: present
+            update_cache: true
+
+        - name: Verify GCC 8.5 is installed
+          ansible.builtin.command: gcc-8 -dumpfullversion
+          register: gcc_8_version
+          changed_when: false
+          failed_when: not gcc_8_version.stdout is match('^8\.5(\.|$)')
+
+        - name: Verify G++ 8.5 is installed
+          ansible.builtin.command: g++-8 -dumpfullversion
+          register: gxx_8_version
+          changed_when: false
+          failed_when: not gxx_8_version.stdout is match('^8\.5(\.|$)')
