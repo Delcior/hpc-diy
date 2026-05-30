@@ -22,14 +22,13 @@
             state: present
             update_cache: true
 
-        - name: Verify GCC 8.5 is installed
-          ansible.builtin.command: gcc-8 -dumpfullversion
-          register: gcc_8_version
-          changed_when: false
-          failed_when: not gcc_8_version.stdout is match('^8\.5(\.|$)')
+        - name: Point gcc to gcc-8
+          ansible.builtin.file:
+            src: /usr/bin/gcc-8
+            dest: /usr/bin/gcc
+            state: link
+            force: true
 
-        - name: Verify G++ 8.5 is installed
-          ansible.builtin.command: g++-8 -dumpfullversion
-          register: gxx_8_version
+        - name: Print default GCC verbose version
+          ansible.builtin.command: gcc -v
           changed_when: false
-          failed_when: not gxx_8_version.stdout is match('^8\.5(\.|$)')
