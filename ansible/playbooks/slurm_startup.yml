@@ -78,6 +78,16 @@
         group: root
         mode: "0644"
 
+    - name: Install Slurm GRES config on compute nodes
+      ansible.builtin.copy:
+        dest: "{{ slurm_sysconfdir }}/gres.conf"
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          Name=gpu Count=1
+      when: inventory_hostname in groups.get(slurm_compute_group, [])
+
     - name: Enable slurmctld on controller hosts
       ansible.builtin.systemd:
         name: slurmctld
