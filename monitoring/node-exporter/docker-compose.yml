@@ -1,0 +1,35 @@
+services:
+  node-exporter:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hpc-diy/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    network_mode: host
+    pid: host
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/host/root
+      - --collector.mountstats
+      - --collector.processes
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host/root:ro,rslave
+
+  process-exporter:
+    image: ncabatoff/process-exporter:latest
+    container_name: process-exporter
+    restart: unless-stopped
+    network_mode: host
+    pid: host
+    command:
+      - --procfs
+      - /host/proc
+      - --config.path
+      - /etc/process-exporter/config.yml
+    volumes:
+      - /proc:/host/proc:ro
+      - ./process-exporter.yml:/etc/process-exporter/config.yml:ro

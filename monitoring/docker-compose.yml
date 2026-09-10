@@ -33,3 +33,4 @@ services:
     volumes:
       - /mnt/cluster-workspace/data/grafana:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./dasboards:/var/lib/grafana/dashboards:ro

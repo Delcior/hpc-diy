@@ -24,12 +24,32 @@ Open Grafana at <http://localhost:3000> and Prometheus at
 <http://localhost:9090>. Grafana is preconfigured to use Prometheus; the
 administrator username is `admin` and the password comes from `.env`.
 
-To collect node metrics, add a `nodes` scrape job to
-`prometheus/prometheus.yml` with the hostnames or IP addresses of the nodes
-running `node_exporter`, then apply the configuration:
+To collect host metrics, run the node-exporter stack on each node. On the
+monitoring host, start it with:
+
+```sh
+cd node-exporter
+docker compose up -d --build
+```
+
+The Prometheus configuration already scrapes the monitoring host through
+`host.docker.internal:9100` and `:9256`. Add the other nodes' IP addresses or
+hostnames to `prometheus/prometheus.yml`, then apply the configuration:
 
 ```sh
 docker compose restart prometheus
 ```
+
+The dashboard is in the intentionally named `dasboards/` directory. Deploy
+all JSON dashboards through the Grafana API with:
+
+```sh
+sudo apt install jq
+./scripts/deploy-dashboards.sh
+```
+
+The process panel requires `process-exporter`; node_exporter itself only
+provides aggregate running and blocked process counts. NFS panels require the
+NFS client/server statistics exposed by the node's kernel.
 
 The default Prometheus retention is 30 days.

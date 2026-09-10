@@ -1,0 +1,106 @@
+{
+  "id": null,
+  "uid": "cluster-monitoring",
+  "title": "Cluster monitoring",
+  "tags": ["cluster", "node-exporter", "nfs"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "time": {"from": "now-1h", "to": "now"},
+  "templating": {
+    "list": [
+      {
+        "name": "node",
+        "label": "Node",
+        "type": "query",
+        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "definition": "label_values(node_uname_info, node)",
+        "query": {"query": "label_values(node_uname_info, node)", "refId": "StandardVariableQuery"},
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "current": {"text": "All", "value": ["$__all"]}
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "CPU usage",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "targets": [{"expr": "100 * (1 - avg by (instance) (rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"}[5m])))", "legendFormat": "{{instance}}", "refId": "A"}]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Memory usage",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "targets": [{"expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node-exporter\",node=~\"$node\"} / node_memory_MemTotal_bytes{job=\"node-exporter\",node=~\"$node\"})", "legendFormat": "{{instance}}", "refId": "A"}]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Network throughput",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "fieldConfig": {"defaults": {"unit": "bps"}, "overrides": []},
+      "targets": [
+        {"expr": "rate(node_network_receive_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[5m]) * 8", "legendFormat": "{{instance}} {{device}} RX", "refId": "A"},
+        {"expr": "rate(node_network_transmit_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[5m]) * 8", "legendFormat": "{{instance}} {{device}} TX", "refId": "B"}
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "NFS RPC and request rate",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "fieldConfig": {"defaults": {"unit": "reqps"}, "overrides": []},
+      "targets": [
+        {"expr": "rate(node_nfs_rpcs_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{instance}} RPCs", "refId": "A"},
+        {"expr": "rate(node_nfs_requests_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{instance}} {{proto}} {{method}}", "refId": "B"},
+        {"expr": "rate(node_nfs_rpc_retransmissions_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{instance}} retransmits", "refId": "C"}
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "/mnt/cluster-workspace usage",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "targets": [{"expr": "100 * (1 - node_filesystem_avail_bytes{job=\"node-exporter\",mountpoint=\"/mnt/cluster-workspace\",node=~\"$node\"} / node_filesystem_size_bytes{job=\"node-exporter\",mountpoint=\"/mnt/cluster-workspace\",node=~\"$node\"})", "legendFormat": "{{instance}} {{device}}", "refId": "A"}]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Workspace filesystem capacity",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "fieldConfig": {"defaults": {"unit": "bytes"}, "overrides": []},
+      "targets": [
+        {"expr": "node_filesystem_size_bytes{job=\"node-exporter\",mountpoint=\"/mnt/cluster-workspace\",node=~\"$node\"}", "legendFormat": "{{instance}} total", "refId": "A"},
+        {"expr": "node_filesystem_avail_bytes{job=\"node-exporter\",mountpoint=\"/mnt/cluster-workspace\",node=~\"$node\"}", "legendFormat": "{{instance}} available", "refId": "B"}
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Running and blocked processes",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "targets": [
+        {"expr": "node_procs_running{job=\"node-exporter\",node=~\"$node\"}", "legendFormat": "{{instance}} running", "refId": "A"},
+        {"expr": "node_procs_blocked{job=\"node-exporter\",node=~\"$node\"}", "legendFormat": "{{instance}} blocked", "refId": "B"}
+      ]
+    },
+    {
+      "id": 8,
+      "type": "table",
+      "title": "Running process groups",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "targets": [{"expr": "namedprocess_namegroup_num_procs{job=\"process-exporter\",node=~\"$node\"} > 0", "legendFormat": "{{instance}} {{groupname}}", "refId": "A", "format": "table", "instant": true}]
+    }
+  ]
+}
