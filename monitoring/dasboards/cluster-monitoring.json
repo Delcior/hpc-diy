@@ -101,6 +101,33 @@
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
       "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
       "targets": [{"expr": "namedprocess_namegroup_num_procs{job=\"process-exporter\",node=~\"$node\"} > 0", "legendFormat": "{{instance}} {{groupname}}", "refId": "A", "format": "table", "instant": true}]
+    },
+    {
+      "id": 9,
+      "type": "timeseries",
+      "title": "CPU usage by core",
+      "description": "A single saturated core can be hidden by the overall CPU average.",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32},
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "targets": [{"expr": "100 * (1 - rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"}[1m]))", "legendFormat": "{{instance}} CPU {{cpu}}", "refId": "A"}]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Hottest CPU core",
+      "description": "Maximum utilization across each node's logical CPUs.",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32},
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "targets": [{"expr": "max by (instance) (100 * (1 - rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"}[1m])))", "legendFormat": "{{instance}}", "refId": "A"}]
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Load per CPU",
+      "description": "Values above 1 indicate more load than one logical CPU can handle.",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 40},
+      "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []},
+      "targets": [{"expr": "node_load1{job=\"node-exporter\",node=~\"$node\"} / count by (instance) (node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"})", "legendFormat": "{{instance}}", "refId": "A"}]
     }
   ]
 }
