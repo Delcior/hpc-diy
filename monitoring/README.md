@@ -40,9 +40,9 @@ The Prometheus configuration already scrapes the monitoring host through
 docker compose restart prometheus
 ```
 
-The Compose configuration uses the cluster DNS server at `192.168.0.1` and
-the `bowie.fis.agh.edu.pl` search domain so `major-tom` and
-`ground-control` resolve from inside the Prometheus container.
+The Prometheus targets use the cluster node addresses `192.168.0.2` for
+`major-tom` and `192.168.0.3` for `ground-control`, avoiding a dependency on
+container DNS configuration.
 
 The dashboard is in the intentionally named `dasboards/` directory. Deploy
 all JSON dashboards through the Grafana API with:

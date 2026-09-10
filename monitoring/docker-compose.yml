@@ -11,10 +11,6 @@ services:
       - "9090:9090"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    dns:
-      - "192.168.0.1"
-    dns_search:
-      - "bowie.fis.agh.edu.pl"
     volumes:
       - /mnt/cluster-workspace/data/prometheus:/prometheus
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
