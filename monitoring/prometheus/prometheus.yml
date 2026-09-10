@@ -1,0 +1,17 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["prometheus:9090"]
+
+  # Add one target for each node running node_exporter, for example:
+  #
+  # - job_name: nodes
+  #   static_configs:
+  #     - targets:
+  #         - raspberry-pi:9100
+  #           - jetson-one:9100
+  #           - jetson-two:9100
