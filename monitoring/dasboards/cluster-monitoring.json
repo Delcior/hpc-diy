@@ -14,7 +14,7 @@
         "name": "node",
         "label": "Node",
         "type": "query",
-        "datasource": {"type": "prometheus", "uid": "prometheus"},
+        "datasource": {"type": "prometheus", "uid": "Prometheus"},
         "definition": "label_values(node_uname_info, node)",
         "query": {"query": "label_values(node_uname_info, node)", "refId": "StandardVariableQuery"},
         "includeAll": true,
