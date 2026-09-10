@@ -7,17 +7,19 @@ scrape_configs:
     static_configs:
       - targets: ["prometheus:9090"]
 
-  # node_exporter and process-exporter run with host networking on the
-  # monitoring host. Add the other nodes' addresses to these target lists.
+  # node_exporter runs on the monitoring host and cluster nodes. The
+  # monitoring host's DNS resolves the cluster hostnames.
   - job_name: node-exporter
     static_configs:
       - targets: ["host.docker.internal:9100"]
         labels:
           node: monitoring-host
-      # - targets: ["raspberry-pi:9100"]
-      #   labels:
-      #     node: raspberry-pi
-      # - targets: ["jetson-one:9100", "jetson-two:9100"]
+      - targets: ["major-tom:9100"]
+        labels:
+          node: major-tom
+      - targets: ["ground-control:9100"]
+        labels:
+          node: ground-control
 
   - job_name: process-exporter
     static_configs:
