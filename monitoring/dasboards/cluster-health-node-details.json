@@ -81,6 +81,26 @@
         {"expr": "rate(node_network_receive_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[5m]) * 8", "legendFormat": "{{node}} {{device}} RX", "refId": "A"},
         {"expr": "rate(node_network_transmit_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[5m]) * 8", "legendFormat": "{{node}} {{device}} TX", "refId": "B"}
       ]
+    },
+    {
+      "id": 5,
+      "type": "gauge",
+      "title": "CPU Temperature",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1, "min": 0, "max": 100}, "overrides": []},
+      "options": {"orientation": "auto", "showThresholdLabels": false, "showThresholdMarkers": true, "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
+      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"CPU-therm\",node=~\"$node\"}", "legendFormat": "{{node}} CPU", "refId": "A", "instant": true}]
+    },
+    {
+      "id": 6,
+      "type": "gauge",
+      "title": "GPU Temperature",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1, "min": 0, "max": 100}, "overrides": []},
+      "options": {"orientation": "auto", "showThresholdLabels": false, "showThresholdMarkers": true, "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
+      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"GPU-therm\",node=~\"$node\"}", "legendFormat": "{{node}} GPU", "refId": "A", "instant": true}]
     }
   ]
 }

@@ -68,40 +68,29 @@
       ]
     },
     {
-      "id": 7,
-      "type": "timeseries",
-      "title": "Running and blocked processes",
+      "id": 12,
+      "type": "table",
+      "title": "CPU Temperature",
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
-      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
-      "targets": [
-        {"expr": "node_procs_running{job=\"node-exporter\"}", "legendFormat": "{{node}} running", "refId": "A"},
-        {"expr": "node_procs_blocked{job=\"node-exporter\"}", "legendFormat": "{{node}} blocked", "refId": "B"}
-      ]
+      "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1}, "overrides": []},
+      "options": {"showHeader": true, "cellHeight": "sm"},
+      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"CPU-therm\"}", "legendFormat": "{{node}}", "refId": "A", "instant": true, "format": "table"}]
     },
     {
-      "id": 9,
-      "type": "timeseries",
-      "title": "CPU usage by core",
-      "description": "A single saturated core can be hidden by the overall CPU average.",
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32},
-      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
-      "targets": [{"expr": "100 * (1 - rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\"}[1m]))", "legendFormat": "{{node}} CPU {{cpu}}", "refId": "A"}]
-    },
-    {
-      "id": 10,
-      "type": "timeseries",
-      "title": "Hottest CPU core",
-      "description": "Maximum utilization across each node's logical CPUs.",
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32},
-      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
-      "targets": [{"expr": "max by (instance, node) (100 * (1 - rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\"}[1m])))", "legendFormat": "{{node}}", "refId": "A"}]
+      "id": 13,
+      "type": "table",
+      "title": "GPU Temperature",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
+      "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1}, "overrides": []},
+      "options": {"showHeader": true, "cellHeight": "sm"},
+      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"GPU-therm\"}", "legendFormat": "{{node}}", "refId": "A", "instant": true, "format": "table"}]
     },
     {
       "id": 11,
       "type": "timeseries",
       "title": "Load per CPU",
       "description": "Values above 1 indicate more load than one logical CPU can handle.",
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 40},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 32},
       "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []},
       "targets": [{"expr": "node_load1{job=\"node-exporter\"} / count by (instance, node) (node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\"})", "legendFormat": "{{node}}", "refId": "A"}]
     }
