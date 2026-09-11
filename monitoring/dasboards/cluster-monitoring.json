@@ -23,7 +23,7 @@
       "title": "Memory usage",
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
       "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
-      "targets": [{"expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node-exporter\"} / node_memory_MemTotal_bytes{job=\"node-exporter\"})", "legendFormat": "{{node}}", "refId": "A"}]
+      "targets": [{"expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node-exporter\",node!=\"monitoring-host\"} / node_memory_MemTotal_bytes{job=\"node-exporter\",node!=\"monitoring-host\"})", "legendFormat": "{{node}}", "refId": "A"}]
     },
     {
       "id": 3,

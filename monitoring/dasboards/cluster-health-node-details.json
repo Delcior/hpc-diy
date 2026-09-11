@@ -1,0 +1,86 @@
+{
+  "id": null,
+  "uid": "cluster-health-node-details",
+  "title": "Cluster Health - Node Details",
+  "tags": ["cluster", "node-exporter"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "time": {"from": "now-1h", "to": "now"},
+  "templating": {
+    "list": [
+      {
+        "name": "node",
+        "label": "Node",
+        "type": "custom",
+        "query": "major-tom,bowie,ground-control",
+        "options": [
+          {"selected": true, "text": "major-tom", "value": "major-tom"},
+          {"selected": false, "text": "bowie", "value": "bowie"},
+          {"selected": false, "text": "ground-control", "value": "ground-control"}
+        ],
+        "includeAll": false,
+        "multi": false,
+        "current": {"text": "major-tom", "value": "major-tom"}
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "CPU",
+      "gridPos": {"h": 10, "w": 12, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "options": {
+        "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "targets": [{"expr": "100 * (1 - avg by (instance, node) (rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"}[1m])))", "legendFormat": "{{node}}", "refId": "A"}]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Memory",
+      "gridPos": {"h": 10, "w": 12, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "options": {
+        "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "targets": [{"expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node-exporter\",node=~\"$node\"} / node_memory_MemTotal_bytes{job=\"node-exporter\",node=~\"$node\"})", "legendFormat": "{{node}}", "refId": "A"}]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "CPU usage by core",
+      "gridPos": {"h": 10, "w": 12, "x": 0, "y": 10},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "options": {
+        "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "targets": [{"expr": "100 * (1 - rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"}[1m]))", "legendFormat": "{{node}} CPU {{cpu}}", "refId": "A"}]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Network throughput",
+      "gridPos": {"h": 10, "w": 12, "x": 12, "y": 10},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "bps", "min": 0}, "overrides": []},
+      "options": {
+        "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]},
+        "tooltip": {"mode": "multi", "sort": "desc"}
+      },
+      "targets": [
+        {"expr": "rate(node_network_receive_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[5m]) * 8", "legendFormat": "{{node}} {{device}} RX", "refId": "A"},
+        {"expr": "rate(node_network_transmit_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[5m]) * 8", "legendFormat": "{{node}} {{device}} TX", "refId": "B"}
+      ]
+    }
+  ]
+}

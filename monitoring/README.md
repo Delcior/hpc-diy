@@ -52,6 +52,9 @@ sudo apt install jq
 ./scripts/deploy-dashboards.sh
 ```
 
+`cluster-health-node-details.json` provides selectable detail views for
+`major-tom`, `bowie`, and `ground-control`.
+
 The process panel requires `process-exporter`; node_exporter itself only
 provides aggregate running and blocked process counts. NFS panels require the
 NFS client/server statistics exposed by the node's kernel.
