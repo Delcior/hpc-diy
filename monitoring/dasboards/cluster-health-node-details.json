@@ -90,7 +90,7 @@
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1, "min": 0, "max": 100}, "overrides": []},
       "options": {"orientation": "auto", "showThresholdLabels": false, "showThresholdMarkers": true, "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
-      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"CPU-therm\",node=~\"$node\"}", "legendFormat": "{{node}} CPU", "refId": "A", "instant": true}]
+      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=~\"CPU-therm|cpu-thermal\",node=~\"$node\"}", "legendFormat": "{{node}} CPU", "refId": "A", "instant": true}]
     },
     {
       "id": 6,
