@@ -33,16 +33,16 @@ docker compose up -d --build
 ```
 
 The Prometheus configuration already scrapes the monitoring host through
-`host.docker.internal:9100` and `:9256`, plus `major-tom:9100` and
-`ground-control:9100`. Apply configuration changes with:
+`host.docker.internal:9100` and `:9256`, plus `192.168.0.2:9100` and
+`192.168.0.3:9100`. Apply configuration changes with:
 
 ```sh
 docker compose restart prometheus
 ```
 
-The Prometheus targets use the cluster hostnames `major-tom` and
-`ground-control`. The Compose configuration points Prometheus at the cluster
-DNS server at `192.168.0.1`.
+The Prometheus targets use the cluster addresses `192.168.0.2` for
+`major-tom` and `192.168.0.3` for `ground-control`. The `node` labels preserve
+the node names in Grafana legends.
 
 The dashboard is in the intentionally named `dasboards/` directory. Deploy
 all JSON dashboards through the Grafana API with:
