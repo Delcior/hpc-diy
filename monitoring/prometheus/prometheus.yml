@@ -13,10 +13,10 @@ scrape_configs:
       - targets: ["host.docker.internal:9100"]
         labels:
           node: monitoring-host
-      - targets: ["192.168.0.2:9100"]
+      - targets: ["major-tom:9100"]
         labels:
           node: major-tom
-      - targets: ["192.168.0.3:9100"]
+      - targets: ["ground-control:9100"]
         labels:
           node: ground-control
 
