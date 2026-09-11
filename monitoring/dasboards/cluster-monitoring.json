@@ -69,21 +69,21 @@
     },
     {
       "id": 12,
-      "type": "table",
+      "type": "timeseries",
       "title": "CPU Temperature",
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
       "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1}, "overrides": []},
-      "options": {"showHeader": true, "cellHeight": "sm"},
-      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"CPU-therm\"}", "legendFormat": "{{node}}", "refId": "A", "instant": true, "format": "table"}]
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"CPU-therm\"}", "legendFormat": "{{node}}", "refId": "A"}]
     },
     {
       "id": 13,
-      "type": "table",
+      "type": "timeseries",
       "title": "GPU Temperature",
       "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
       "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1}, "overrides": []},
-      "options": {"showHeader": true, "cellHeight": "sm"},
-      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"GPU-therm\"}", "legendFormat": "{{node}}", "refId": "A", "instant": true, "format": "table"}]
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"GPU-therm\"}", "legendFormat": "{{node}}", "refId": "A"}]
     },
     {
       "id": 11,
