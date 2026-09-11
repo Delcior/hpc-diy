@@ -32,8 +32,8 @@
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
       "fieldConfig": {"defaults": {"unit": "bps"}, "overrides": []},
       "targets": [
-        {"expr": "rate(node_network_receive_bytes_total{job=\"node-exporter\",device!=\"lo\"}[5m]) * 8", "legendFormat": "{{node}} {{device}} RX", "refId": "A"},
-        {"expr": "rate(node_network_transmit_bytes_total{job=\"node-exporter\",device!=\"lo\"}[5m]) * 8", "legendFormat": "{{node}} {{device}} TX", "refId": "B"}
+        {"expr": "(rate(node_network_receive_bytes_total{job=\"node-exporter\",node=~\"major-tom|ground-control\",device=\"eth0\"}[5m]) or rate(node_network_receive_bytes_total{job=\"node-exporter\",node=\"bowie\",device=~\"eth0|enx.*\"}[5m])) * 8", "legendFormat": "{{node}} {{device}} RX", "refId": "A"},
+        {"expr": "(rate(node_network_transmit_bytes_total{job=\"node-exporter\",node=~\"major-tom|ground-control\",device=\"eth0\"}[5m]) or rate(node_network_transmit_bytes_total{job=\"node-exporter\",node=\"bowie\",device=~\"eth0|enx.*\"}[5m])) * 8", "legendFormat": "{{node}} {{device}} TX", "refId": "B"}
       ]
     },
     {
