@@ -38,4 +38,3 @@ services:
       GF_USERS_ALLOW_SIGN_UP: "false"
     volumes:
       - /mnt/cluster-workspace/data/grafana:/var/lib/grafana
-      - ./grafana/provisioning:/etc/grafana/provisioning:ro
