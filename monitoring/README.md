@@ -55,6 +55,9 @@ sudo apt install jq
 `cluster-health-node-details.json` provides selectable detail views for
 `major-tom`, `bowie`, and `ground-control`.
 
+`slurm-overview.json` provides the Slurm scheduler and allocation overview
+using metrics scraped by the `slurm` Prometheus job.
+
 The process panel requires `process-exporter`; node_exporter itself only
 provides aggregate running and blocked process counts. NFS panels require the
 NFS client/server statistics exposed by the node's kernel.
