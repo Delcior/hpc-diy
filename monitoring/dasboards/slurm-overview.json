@@ -16,7 +16,7 @@
       "gridPos": {"h": 5, "w": 4, "x": 0, "y": 0},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "thresholds"}}, "overrides": []},
-      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
       "targets": [{"expr": "slurm_nodes_total{job=\"slurm\"}", "instant": true, "refId": "A"}]
     },
     {
@@ -26,7 +26,7 @@
       "gridPos": {"h": 5, "w": 4, "x": 4, "y": 0},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "thresholds"}}, "overrides": []},
-      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
       "targets": [{"expr": "count(count by (node) (slurm_node_status{job=\"slurm\",status=~\"alloc.*|mix.*\"})) or vector(0)", "instant": true, "refId": "A"}]
     },
     {
@@ -36,7 +36,7 @@
       "gridPos": {"h": 5, "w": 4, "x": 8, "y": 0},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}}, "overrides": []},
-      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
       "targets": [{"expr": "count(count by (node) (slurm_node_status{job=\"slurm\",status=~\"down.*|drain.*|fail.*\"})) or vector(0)", "instant": true, "refId": "A"}]
     },
     {
@@ -46,7 +46,7 @@
       "gridPos": {"h": 5, "w": 4, "x": 12, "y": 0},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "thresholds"}}, "overrides": []},
-      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
       "targets": [{"expr": "slurm_jobs_running{job=\"slurm\"}", "instant": true, "refId": "A"}]
     },
     {
@@ -56,7 +56,7 @@
       "gridPos": {"h": 5, "w": 4, "x": 16, "y": 0},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 1}, {"color": "red", "value": 10}]}}, "overrides": []},
-      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
       "targets": [{"expr": "slurm_jobs_pending{job=\"slurm\"}", "instant": true, "refId": "A"}]
     },
     {
@@ -66,7 +66,7 @@
       "gridPos": {"h": 5, "w": 4, "x": 20, "y": 0},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "color": {"mode": "thresholds"}}, "overrides": []},
-      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
       "targets": [{"expr": "slurm_cpus_alloc{job=\"slurm\"} / clamp_min(slurm_cpus_total{job=\"slurm\"}, 1) * 100", "instant": true, "refId": "A"}]
     },
     {
