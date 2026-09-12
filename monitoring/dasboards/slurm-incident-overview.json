@@ -1,0 +1,176 @@
+{
+  "id": null,
+  "uid": "slurm-incident-overview",
+  "title": "Slurm Incident Overview",
+  "tags": ["slurm", "hpc", "incident"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": {"from": "now-6h", "to": "now"},
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Slurm exporter",
+      "gridPos": {"h": 5, "w": 4, "x": 0, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}, {"color": "green", "value": 1}]}}, "overrides": []},
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "targets": [{"expr": "up{job=\"slurm\"}", "instant": true, "refId": "A"}]
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Total nodes",
+      "gridPos": {"h": 5, "w": 4, "x": 4, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "targets": [{"expr": "slurm_nodes_total{job=\"slurm\"}", "instant": true, "refId": "A"}]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Down / drained nodes",
+      "gridPos": {"h": 5, "w": 4, "x": 8, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}}, "overrides": []},
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "targets": [{"expr": "count(count by(node) (slurm_node_status{job=\"slurm\",status=~\"down.*|drain.*|fail.*\"})) or vector(0)", "instant": true, "refId": "A"}]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Pending jobs",
+      "gridPos": {"h": 5, "w": 4, "x": 12, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "orange", "value": 1}, {"color": "red", "value": 10}]}}, "overrides": []},
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "targets": [{"expr": "slurm_jobs_pending{job=\"slurm\"}", "instant": true, "refId": "A"}]
+    },
+    {
+      "id": 5,
+      "type": "stat",
+      "title": "Allocated CPU",
+      "gridPos": {"h": 5, "w": 4, "x": 16, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100, "color": {"mode": "thresholds"}}, "overrides": []},
+      "options": {"colorMode": "background", "graphMode": "area", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "targets": [{"expr": "slurm_cpus_alloc{job=\"slurm\"} / clamp_min(slurm_cpus_total{job=\"slurm\"}, 1) * 100", "instant": true, "refId": "A"}]
+    },
+    {
+      "id": 6,
+      "type": "stat",
+      "title": "Exporter collector failures",
+      "gridPos": {"h": 5, "w": 4, "x": 20, "y": 0},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}, {"color": "red", "value": 1}]}}, "overrides": []},
+      "options": {"colorMode": "background", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["sum"], "fields": "", "values": false}, "textMode": "value_and_name"},
+      "targets": [{"expr": "count(slurm_exporter_collector_success{job=\"slurm\"} == 0) or vector(0)", "instant": true, "refId": "A"}]
+    },
+    {
+      "id": 7,
+      "type": "table",
+      "title": "Broken nodes and reasons",
+      "gridPos": {"h": 9, "w": 12, "x": 0, "y": 5},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "options": {"cellHeight": "sm", "showHeader": true},
+      "transformations": [{"id": "organize", "options": {"excludeByName": {"Time": true, "instance": true, "job": true, "Value": true, "__name__": true}, "renameByName": {"node": "Node", "status": "Status", "reason": "Reason", "since": "Since"}}}],
+      "targets": [
+        {"expr": "max by(node, status) (slurm_node_status{job=\"slurm\",status=~\"down.*|drain.*|fail.*\"})", "instant": true, "format": "table", "refId": "A"},
+        {"expr": "slurm_node_drain_reason_info{job=\"slurm\"}", "instant": true, "format": "table", "refId": "B"}
+      ]
+    },
+    {
+      "id": 8,
+      "type": "table",
+      "title": "Pending job reasons",
+      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 5},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "options": {"cellHeight": "sm", "showHeader": true},
+      "transformations": [{"id": "organize", "options": {"excludeByName": {"Time": true, "instance": true, "job": true, "__name__": true}, "renameByName": {"partition": "Partition", "reason": "Reason", "Value": "Pending jobs"}}}],
+      "targets": [{"expr": "sum by(partition, reason) (slurm_queue_pending{job=\"slurm\"})", "instant": true, "format": "table", "refId": "A"}]
+    },
+    {
+      "id": 9,
+      "type": "table",
+      "title": "Partition bottlenecks",
+      "gridPos": {"h": 9, "w": 24, "x": 0, "y": 14},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "options": {"cellHeight": "sm", "showHeader": true},
+      "transformations": [{"id": "merge", "options": {}}, {"id": "organize", "options": {"excludeByName": {"Time": true, "instance": true, "job": true, "__name__": true}, "renameByName": {"partition": "Partition", "Value #A": "CPU allocated", "Value #B": "CPU total", "Value #C": "CPU idle", "Value #D": "Running jobs", "Value #E": "Pending jobs"}}}],
+      "targets": [
+        {"expr": "slurm_partition_cpus_allocated{job=\"slurm\"}", "instant": true, "format": "table", "refId": "A"},
+        {"expr": "slurm_partition_cpus_total{job=\"slurm\"}", "instant": true, "format": "table", "refId": "B"},
+        {"expr": "slurm_partition_cpus_idle{job=\"slurm\"}", "instant": true, "format": "table", "refId": "C"},
+        {"expr": "slurm_partition_jobs_running{job=\"slurm\"}", "instant": true, "format": "table", "refId": "D"},
+        {"expr": "slurm_partition_jobs_pending{job=\"slurm\"}", "instant": true, "format": "table", "refId": "E"}
+      ]
+    },
+    {
+      "id": 10,
+      "type": "timeseries",
+      "title": "Jobs and cores over time",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 23},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "slurm_jobs_running{job=\"slurm\"}", "legendFormat": "Running jobs", "refId": "A"},
+        {"expr": "slurm_jobs_pending{job=\"slurm\"}", "legendFormat": "Pending jobs", "refId": "B"},
+        {"expr": "slurm_jobs_cores_running{job=\"slurm\"}", "legendFormat": "Running cores", "refId": "C"},
+        {"expr": "slurm_jobs_cores_pending{job=\"slurm\"}", "legendFormat": "Pending cores", "refId": "D"}
+      ]
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Scheduler health",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 23},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "slurm_scheduler_queue_size{job=\"slurm\"}", "legendFormat": "Scheduler queue", "refId": "A"},
+        {"expr": "slurm_scheduler_last_cycle{job=\"slurm\"}", "legendFormat": "Last cycle (us)", "refId": "B"},
+        {"expr": "slurm_scheduler_mean_cycle{job=\"slurm\"}", "legendFormat": "Mean cycle (us)", "refId": "C"},
+        {"expr": "slurm_scheduler_dbd_queue_size{job=\"slurm\"}", "legendFormat": "DBD queue", "refId": "D"}
+      ]
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Slowest Slurm RPCs",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 31},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "us"}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "topk(10, slurm_rpc_stats_avg_time{job=\"slurm\"})", "legendFormat": "{{operation}}", "refId": "A"}]
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "Exporter command errors",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 31},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "rate(slurm_exporter_command_errors_total{job=\"slurm\"}[5m])", "legendFormat": "{{command}}", "refId": "A"}]
+    },
+    {
+      "id": 14,
+      "type": "table",
+      "title": "Collector health",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 39},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "options": {"cellHeight": "sm", "showHeader": true},
+      "transformations": [{"id": "organize", "options": {"excludeByName": {"Time": true, "instance": true, "job": true, "__name__": true}, "renameByName": {"collector": "Collector", "Value": "Success"}}}],
+      "targets": [{"expr": "slurm_exporter_collector_success{job=\"slurm\"}", "instant": true, "format": "table", "refId": "A"}]
+    }
+  ]
+}
