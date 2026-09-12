@@ -81,23 +81,6 @@
       "targets": [{"expr": "max by (node, status) (slurm_node_status{job=\"slurm\"})", "instant": true, "format": "table", "refId": "A"}]
     },
     {
-      "id": 8,
-      "type": "table",
-      "title": "Partition resources",
-      "gridPos": {"h": 9, "w": 12, "x": 12, "y": 5},
-      "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
-      "options": {"cellHeight": "sm", "showHeader": true},
-      "transformations": [{"id": "merge", "options": {}}, {"id": "organize", "options": {"excludeByName": {"Time": true, "instance": true, "job": true, "__name__": true}, "renameByName": {"partition": "Partition", "Value #A": "CPU Allocated", "Value #B": "CPU Total", "Value #C": "CPU Idle", "Value #D": "Running Jobs", "Value #E": "Pending Jobs"}}}],
-      "targets": [
-        {"expr": "slurm_partition_cpus_allocated{job=\"slurm\"}", "instant": true, "format": "table", "refId": "A"},
-        {"expr": "slurm_partition_cpus_total{job=\"slurm\"}", "instant": true, "format": "table", "refId": "B"},
-        {"expr": "slurm_partition_cpus_idle{job=\"slurm\"}", "instant": true, "format": "table", "refId": "C"},
-        {"expr": "slurm_partition_jobs_running{job=\"slurm\"}", "instant": true, "format": "table", "refId": "D"},
-        {"expr": "slurm_partition_jobs_pending{job=\"slurm\"}", "instant": true, "format": "table", "refId": "E"}
-      ]
-    },
-    {
       "id": 9,
       "type": "timeseries",
       "title": "Jobs over time",

@@ -58,6 +58,14 @@ sudo apt install jq
 `slurm-overview.json` provides the Slurm scheduler and allocation overview
 using metrics scraped by the `slurm` Prometheus job.
 
+To continuously convert `tegrastats` output for node_exporter's textfile
+collector, set `PROM_OUTPUT`, then run:
+
+```sh
+PROM_OUTPUT=/var/lib/node_exporter/textfile/tegrastats.prom \
+python3.6 scripts/tegrastats_to_prom.py
+```
+
 The process panel requires `process-exporter`; node_exporter itself only
 provides aggregate running and blocked process counts. NFS panels require the
 NFS client/server statistics exposed by the node's kernel.
