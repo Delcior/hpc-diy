@@ -25,3 +25,10 @@ scrape_configs:
       - targets: ["host.docker.internal:9256"]
         labels:
           node: monitoring-host
+
+  - job_name: slurm
+    scrape_interval: 30s
+    static_configs:
+      - targets: ["host.docker.internal:9341"]
+        labels:
+          cluster: bowie
