@@ -13,7 +13,7 @@
       "id": 1,
       "type": "timeseries",
       "title": "CPU usage",
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 8},
       "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
       "targets": [{"expr": "100 * (1 - avg by (instance, node) (rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\"}[5m])))", "legendFormat": "{{node}}", "refId": "A"}]
     },
@@ -21,7 +21,7 @@
       "id": 2,
       "type": "timeseries",
       "title": "Memory usage",
-      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 8},
       "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
       "targets": [{"expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node-exporter\",node!=\"monitoring-host\"} / node_memory_MemTotal_bytes{job=\"node-exporter\",node!=\"monitoring-host\"})", "legendFormat": "{{node}}", "refId": "A"}]
     },
@@ -29,7 +29,7 @@
       "id": 3,
       "type": "timeseries",
       "title": "Network throughput",
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24},
       "fieldConfig": {"defaults": {"unit": "bps"}, "overrides": []},
       "targets": [
         {"expr": "(rate(node_network_receive_bytes_total{job=\"node-exporter\",node=~\"major-tom|ground-control\",device=\"eth0\"}[5m]) or rate(node_network_receive_bytes_total{job=\"node-exporter\",node=\"bowie\",device=~\"eth0|enx.*\"}[5m])) * 8", "legendFormat": "{{node}} {{device}} RX", "refId": "A"},
@@ -40,7 +40,7 @@
       "id": 4,
       "type": "timeseries",
       "title": "NFS RPC and request rate",
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24},
       "fieldConfig": {"defaults": {"unit": "reqps"}, "overrides": []},
       "targets": [
         {"expr": "rate(node_nfs_rpcs_total{job=\"node-exporter\"}[5m])", "legendFormat": "{{node}} RPCs", "refId": "A"},
@@ -52,7 +52,7 @@
       "id": 12,
       "type": "timeseries",
       "title": "CPU Temperature",
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 8},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 16},
       "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=~\"CPU-therm|cpu-thermal\"}", "legendFormat": "{{node}}", "refId": "A"}]
@@ -61,7 +61,7 @@
       "id": 13,
       "type": "timeseries",
       "title": "GPU Temperature",
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 8},
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 16},
       "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"GPU-therm\"}", "legendFormat": "{{node}}", "refId": "A"}]
@@ -70,7 +70,7 @@
       "id": 14,
       "type": "timeseries",
       "title": "GPU Usage",
-      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 8},
       "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [{"expr": "max by (node) (jetson_gpu_utilization_percent{job=\"node-exporter\",node=~\"major-tom|ground-control\"})", "legendFormat": "{{node}}", "refId": "A"}]
@@ -79,7 +79,7 @@
       "id": 15,
       "type": "timeseries",
       "title": "Worker Nodes Power Consumption",
-      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 8},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 16},
       "fieldConfig": {"defaults": {"unit": "watt", "decimals": 2, "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [{"expr": "jetson_power_watts{job=\"node-exporter\",rail=\"POM_5V_IN\",node=~\"major-tom|ground-control\"}", "legendFormat": "{{node}}", "refId": "A"}]
@@ -88,7 +88,7 @@
       "id": 16,
       "type": "bargauge",
       "title": "Node State Breakdown",
-      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 24},
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []},
       "options": {"displayMode": "gradient", "orientation": "horizontal", "showUnfilled": true, "valueMode": "color", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
@@ -105,7 +105,7 @@
       "id": 17,
       "type": "timeseries",
       "title": "All Jobs States",
-      "gridPos": {"h": 8, "w": 16, "x": 8, "y": 24},
+      "gridPos": {"h": 8, "w": 16, "x": 8, "y": 0},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
