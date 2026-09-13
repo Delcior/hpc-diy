@@ -1,0 +1,8 @@
+1. make a playbook that uninstalls old stuff and installs docker engine https://docs.docker.com/engine/install/ubuntu/
+2. run scrapers
+3. secure everything with separate users
+4. use https://github.com/NVIDIA/dcgm-exporter maybe 
+5. clear PROM_OUTPUT=/var/lib/node_exporter/textfile/tegrastats.prom
+PROM_OUTPUT=/var/lib/node_exporter/textfile/tegrastats.prom python3 tegrastats_to_prom.py &
+
+we cannot read power for raspbery because it only exposes Volts, we have missing Amps 
