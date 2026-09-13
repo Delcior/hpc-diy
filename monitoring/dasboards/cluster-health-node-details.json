@@ -104,18 +104,13 @@
     },
     {
       "id": 7,
-      "type": "table",
+      "type": "timeseries",
       "title": "GPU Usage",
       "gridPos": {"h": 8, "w": 24, "x": 0, "y": 28},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
-      "options": {"cellHeight": "sm", "showHeader": true},
-      "transformations": [{"id": "merge", "options": {}}, {"id": "organize", "options": {"excludeByName": {"Time": true, "instance": true, "job": true, "engine": true, "__name__": true}, "renameByName": {"node": "Node", "Value #A": "GPU usage (%)", "Value #B": "GPU clock (MHz)", "Value #C": "GPU temperature (C)"}}}],
-      "targets": [
-        {"expr": "max by (node) (jetson_gpu_utilization_percent{job=\"node-exporter\",node=~\"$node\"})", "instant": true, "format": "table", "refId": "A"},
-        {"expr": "max by (node) (jetson_gpu_clock_hertz{job=\"node-exporter\",node=~\"$node\"}) / 1000000", "instant": true, "format": "table", "refId": "B"},
-        {"expr": "max by (node) (jetson_temperature_celsius{job=\"node-exporter\",sensor=\"gpu\",node=~\"$node\"})", "instant": true, "format": "table", "refId": "C"}
-      ]
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "max by (node) (jetson_gpu_utilization_percent{job=\"node-exporter\",node=~\"$node\"})", "legendFormat": "{{node}}", "refId": "A"}]
     }
   ]
 }
