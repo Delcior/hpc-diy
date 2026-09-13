@@ -66,6 +66,10 @@ PROM_OUTPUT=/var/lib/node_exporter/textfile/tegrastats.prom \
 python3.6 scripts/tegrastats_to_prom.py
 ```
 
+Power rails are exported as `jetson_power_watts` with a `rail` label,
+including `POM_5V_IN`, `POM_5V_GPU`, and `POM_5V_CPU` when reported by
+`tegrastats`.
+
 The process panel requires `process-exporter`; node_exporter itself only
 provides aggregate running and blocked process counts. NFS panels require the
 NFS client/server statistics exposed by the node's kernel.

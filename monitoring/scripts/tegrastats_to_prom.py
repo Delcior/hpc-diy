@@ -26,7 +26,7 @@ TEMP_RE = re.compile(
     r"(\d+(?:\.\d+)?)C\b"
 )
 POWER_RE = re.compile(
-    r"\b(VDD_IN|VDD_CPU|VDD_GPU|POM_5V_IN)\s+"
+    r"\b(VDD_IN|VDD_CPU|VDD_GPU|POM_5V_IN|POM_5V_GPU|POM_5V_CPU)\s+"
     r"(\d+(?:\.\d+)?)(?:/(?:\d+(?:\.\d+)?))?"
 )
 

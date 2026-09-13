@@ -111,6 +111,20 @@
       "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [{"expr": "max by (node) (jetson_gpu_utilization_percent{job=\"node-exporter\",node=~\"$node\"})", "legendFormat": "{{node}}", "refId": "A"}]
+    },
+    {
+      "id": 8,
+      "type": "timeseries",
+      "title": "Power Consumption",
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 36},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "watt", "decimals": 2, "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "jetson_power_watts{job=\"node-exporter\",rail=\"POM_5V_IN\",node=~\"$node\"}", "legendFormat": "Total", "refId": "A"},
+        {"expr": "jetson_power_watts{job=\"node-exporter\",rail=\"POM_5V_GPU\",node=~\"$node\"}", "legendFormat": "GPU", "refId": "B"},
+        {"expr": "jetson_power_watts{job=\"node-exporter\",rail=\"POM_5V_CPU\",node=~\"$node\"}", "legendFormat": "CPU", "refId": "C"}
+      ]
     }
   ]
 }
