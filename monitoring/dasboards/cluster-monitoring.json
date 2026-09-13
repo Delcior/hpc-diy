@@ -86,6 +86,20 @@
       "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"GPU-therm\"}", "legendFormat": "{{node}}", "refId": "A"}]
     },
     {
+      "id": 14,
+      "type": "table",
+      "title": "GPU Usage",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 32},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "options": {"cellHeight": "sm", "showHeader": true},
+      "transformations": [{"id": "merge", "options": {}}, {"id": "organize", "options": {"excludeByName": {"Time": true, "instance": true, "job": true, "engine": true, "__name__": true}, "renameByName": {"node": "Node", "Value #A": "GPU usage (%)", "Value #B": "GPU clock (MHz)", "Value #C": "GPU temperature (C)"}}}],
+      "targets": [
+        {"expr": "max by (node) (jetson_gpu_utilization_percent{job=\"node-exporter\",node=~\"major-tom|ground-control\"})", "instant": true, "format": "table", "refId": "A"},
+        {"expr": "max by (node) (jetson_gpu_clock_hertz{job=\"node-exporter\",node=~\"major-tom|ground-control\"}) / 1000000", "instant": true, "format": "table", "refId": "B"},
+        {"expr": "max by (node) (jetson_temperature_celsius{job=\"node-exporter\",sensor=\"gpu\",node=~\"major-tom|ground-control\"})", "instant": true, "format": "table", "refId": "C"}
+      ]
+    },
+    {
       "id": 11,
       "type": "timeseries",
       "title": "Load per CPU",
