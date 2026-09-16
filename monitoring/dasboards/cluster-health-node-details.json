@@ -6,7 +6,7 @@
   "timezone": "browser",
   "schemaVersion": 39,
   "version": 1,
-  "refresh": "15s",
+  "refresh": "30s",
   "time": {"from": "now-1h", "to": "now"},
   "templating": {
     "list": [
@@ -14,10 +14,9 @@
         "name": "node",
         "label": "Node",
         "type": "custom",
-        "query": "major-tom,bowie,ground-control",
+        "query": "major-tom,ground-control",
         "options": [
           {"selected": true, "text": "major-tom", "value": "major-tom"},
-          {"selected": false, "text": "bowie", "value": "bowie"},
           {"selected": false, "text": "ground-control", "value": "ground-control"}
         ],
         "includeAll": false,
@@ -28,95 +27,84 @@
   },
   "panels": [
     {
-      "id": 1,
+      "id": 17,
       "type": "timeseries",
-      "title": "CPU",
-      "gridPos": {"h": 10, "w": 12, "x": 0, "y": 0},
+      "title": "All Jobs States",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
-      "options": {
-        "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]},
-        "tooltip": {"mode": "multi", "sort": "desc"}
-      },
-      "targets": [{"expr": "100 * (1 - avg by (instance, node) (rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"}[1m])))", "legendFormat": "{{node}}", "refId": "A"}]
-    },
-    {
-      "id": 2,
-      "type": "timeseries",
-      "title": "Memory",
-      "gridPos": {"h": 10, "w": 12, "x": 12, "y": 0},
-      "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
-      "options": {
-        "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]},
-        "tooltip": {"mode": "multi", "sort": "desc"}
-      },
-      "targets": [{"expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node-exporter\",node=~\"$node\"} / node_memory_MemTotal_bytes{job=\"node-exporter\",node=~\"$node\"})", "legendFormat": "{{node}}", "refId": "A"}]
-    },
-    {
-      "id": 3,
-      "type": "timeseries",
-      "title": "CPU usage by core",
-      "gridPos": {"h": 10, "w": 12, "x": 0, "y": 10},
-      "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
-      "options": {
-        "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]},
-        "tooltip": {"mode": "multi", "sort": "desc"}
-      },
-      "targets": [{"expr": "100 * (1 - rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"}[1m]))", "legendFormat": "{{node}} CPU {{cpu}}", "refId": "A"}]
-    },
-    {
-      "id": 4,
-      "type": "timeseries",
-      "title": "Network throughput",
-      "gridPos": {"h": 10, "w": 12, "x": 12, "y": 10},
-      "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "fieldConfig": {"defaults": {"unit": "bps", "min": 0}, "overrides": []},
-      "options": {
-        "legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]},
-        "tooltip": {"mode": "multi", "sort": "desc"}
-      },
+      "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [
-        {"expr": "rate(node_network_receive_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[5m]) * 8", "legendFormat": "{{node}} {{device}} RX", "refId": "A"},
-        {"expr": "rate(node_network_transmit_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[5m]) * 8", "legendFormat": "{{node}} {{device}} TX", "refId": "B"}
+        {"expr": "slurm_jobs_running{job=\"slurm\"}", "legendFormat": "Running", "refId": "A"},
+        {"expr": "slurm_jobs_pending{job=\"slurm\"}", "legendFormat": "Pending", "refId": "B"},
+        {"expr": "slurm_jobs_completing{job=\"slurm\"}", "legendFormat": "Completing", "refId": "C"},
+        {"expr": "slurm_jobs_failed{job=\"slurm\"}", "legendFormat": "Failed", "refId": "D"},
+        {"expr": "slurm_jobs_suspended{job=\"slurm\"}", "legendFormat": "Suspended", "refId": "E"}
       ]
     },
     {
-      "id": 5,
-      "type": "gauge",
-      "title": "CPU Temperature",
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+      "id": 1,
+      "type": "timeseries",
+      "title": "CPU usage",
+      "gridPos": {"h": 10, "w": 8, "x": 0, "y": 8},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1, "min": 0, "max": 100}, "overrides": []},
-      "options": {"orientation": "auto", "showThresholdLabels": false, "showThresholdMarkers": true, "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
-      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=~\"CPU-therm|cpu-thermal\",node=~\"$node\"}", "legendFormat": "{{node}} CPU", "refId": "A", "instant": true}]
+      "fieldConfig": {
+        "defaults": {"unit": "percent", "min": 0, "max": 100},
+        "overrides": [
+          {"matcher": {"id": "byName", "options": "Overall usage"}, "properties": [{"id": "color", "value": {"fixedColor": "yellow", "mode": "fixed"}}, {"id": "custom.lineWidth", "value": 4}, {"id": "custom.fillOpacity", "value": 20}]}
+        ]
+      },
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "100 * (1 - avg by (instance, node) (rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"}[1m])))", "legendFormat": "Overall usage", "refId": "A"},
+        {"expr": "100 * (1 - rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"}[1m]))", "legendFormat": "CPU {{cpu}}", "refId": "B"}
+      ]
     },
     {
-      "id": 6,
-      "type": "gauge",
-      "title": "GPU Temperature",
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
-      "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1, "min": 0, "max": 100}, "overrides": []},
-      "options": {"orientation": "auto", "showThresholdLabels": false, "showThresholdMarkers": true, "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}},
-      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"GPU-therm\",node=~\"$node\"}", "legendFormat": "{{node}} GPU", "refId": "A", "instant": true}]
-    },
-    {
-      "id": 7,
+      "id": 14,
       "type": "timeseries",
       "title": "GPU Usage",
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 28},
+      "gridPos": {"h": 10, "w": 8, "x": 8, "y": 8},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [{"expr": "max by (node) (jetson_gpu_utilization_percent{job=\"node-exporter\",node=~\"$node\"})", "legendFormat": "{{node}}", "refId": "A"}]
     },
     {
-      "id": 8,
+      "id": 2,
+      "type": "timeseries",
+      "title": "Memory usage",
+      "gridPos": {"h": 10, "w": 8, "x": 16, "y": 8},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "percent", "min": 0, "max": 100}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "100 * (1 - node_memory_MemAvailable_bytes{job=\"node-exporter\",node=~\"$node\"} / node_memory_MemTotal_bytes{job=\"node-exporter\",node=~\"$node\"})", "legendFormat": "{{node}}", "refId": "A"}]
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "CPU Temperature",
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 18},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=~\"CPU-therm|cpu-thermal\",node=~\"$node\"}", "legendFormat": "{{node}}", "refId": "A"}]
+    },
+    {
+      "id": 13,
+      "type": "timeseries",
+      "title": "GPU Temperature",
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 18},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "celsius", "decimals": 1}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "node_thermal_zone_temp{job=\"node-exporter\",type=\"GPU-therm\",node=~\"$node\"}", "legendFormat": "{{node}}", "refId": "A"}]
+    },
+    {
+      "id": 15,
       "type": "timeseries",
       "title": "Power Consumption",
-      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 36},
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 18},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "watt", "decimals": 2, "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
@@ -124,6 +112,33 @@
         {"expr": "jetson_power_watts{job=\"node-exporter\",rail=\"POM_5V_IN\",node=~\"$node\"}", "legendFormat": "Total", "refId": "A"},
         {"expr": "jetson_power_watts{job=\"node-exporter\",rail=\"POM_5V_GPU\",node=~\"$node\"}", "legendFormat": "GPU", "refId": "B"},
         {"expr": "jetson_power_watts{job=\"node-exporter\",rail=\"POM_5V_CPU\",node=~\"$node\"}", "legendFormat": "CPU", "refId": "C"}
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Network throughput",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 26},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "bps", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "rate(node_network_receive_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[5m]) * 8", "legendFormat": "{{node}} {{device}} RX", "refId": "A"},
+        {"expr": "rate(node_network_transmit_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[5m]) * 8", "legendFormat": "{{node}} {{device}} TX", "refId": "B"}
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "NFS RPC and request rate",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 26},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "reqps"}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "rate(node_nfs_rpcs_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{node}} RPCs", "refId": "A"},
+        {"expr": "rate(node_nfs_requests_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{node}} {{proto}} {{method}}", "refId": "B"},
+        {"expr": "rate(node_nfs_rpc_retransmissions_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{node}} retransmits", "refId": "C"}
       ]
     }
   ]
