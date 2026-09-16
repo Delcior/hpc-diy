@@ -51,7 +51,7 @@
       "fieldConfig": {
         "defaults": {"unit": "percent", "min": 0, "max": 100},
         "overrides": [
-          {"matcher": {"id": "byName", "options": "Overall usage"}, "properties": [{"id": "color", "value": {"fixedColor": "yellow", "mode": "fixed"}}, {"id": "custom.lineWidth", "value": 4}, {"id": "custom.fillOpacity", "value": 20}]}
+          {"matcher": {"id": "byName", "options": "Overall usage"}, "properties": [{"id": "color", "value": {"fixedColor": "purple", "mode": "fixed"}}]}
         ]
       },
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
