@@ -140,20 +140,22 @@
     {
       "id": 20,
       "type": "timeseries",
-      "title": "NFS Server Network and Errors",
+      "title": "NFS Server Network",
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 40},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "fieldConfig": {
-        "defaults": {"unit": "pps", "min": 0},
-        "overrides": [
-          {"matcher": {"id": "byRegexp", "options": "^RPC error.*"}, "properties": [{"id": "unit", "value": "ops"}]}
-        ]
-      },
+      "fieldConfig": {"defaults": {"unit": "suffix:p/s", "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
-      "targets": [
-        {"expr": "rate(node_nfsd_packets_total{job=\"node-exporter\",node=\"bowie\"}[5m])", "legendFormat": "{{proto}} packets/s", "refId": "A"},
-        {"expr": "rate(node_nfsd_rpc_errors_total{job=\"node-exporter\",node=\"bowie\"}[5m])", "legendFormat": "RPC error {{error}}", "refId": "B"}
-      ]
+      "targets": [{"expr": "rate(node_nfsd_packets_total{job=\"node-exporter\",node=\"bowie\"}[5m])", "legendFormat": "{{proto}} packets/s", "refId": "A"}]
+    },
+    {
+      "id": 23,
+      "type": "timeseries",
+      "title": "RPC Errors",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 48},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "suffix:errors/s", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "rate(node_nfsd_rpc_errors_total{job=\"node-exporter\",node=\"bowie\"}[5m])", "legendFormat": "RPC error {{error}}", "refId": "A"}]
     },
     {
       "id": 21,
@@ -167,21 +169,6 @@
         {"expr": "100 * rate(node_disk_io_time_seconds_total{job=\"node-exporter\",node=\"bowie\",device!~\"loop.*|ram.*|zram.*|dm-.*|sr.*\"}[5m])", "legendFormat": "{{device}} busy %", "refId": "A"},
         {"expr": "1000 * rate(node_disk_read_time_seconds_total{job=\"node-exporter\",node=\"bowie\",device!~\"loop.*|ram.*|zram.*|dm-.*|sr.*\"}[5m]) / clamp_min(rate(node_disk_reads_completed_total{job=\"node-exporter\",node=\"bowie\",device!~\"loop.*|ram.*|zram.*|dm-.*|sr.*\"}[5m]), 1)", "legendFormat": "{{device}} read ms", "refId": "B"},
         {"expr": "1000 * rate(node_disk_write_time_seconds_total{job=\"node-exporter\",node=\"bowie\",device!~\"loop.*|ram.*|zram.*|dm-.*|sr.*\"}[5m]) / clamp_min(rate(node_disk_writes_completed_total{job=\"node-exporter\",node=\"bowie\",device!~\"loop.*|ram.*|zram.*|dm-.*|sr.*\"}[5m]), 1)", "legendFormat": "{{device}} write ms", "refId": "C"}
-      ]
-    },
-    {
-      "id": 22,
-      "type": "table",
-      "title": "NFS Server Health",
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 48},
-      "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
-      "options": {"cellHeight": "sm", "showHeader": true},
-      "transformations": [{"id": "organize", "options": {"excludeByName": {"Time": true, "instance": true, "job": true, "__name__": true}, "renameByName": {"Value #A": "Exporter up", "Value #B": "NFS server threads", "Value #C": "RPC errors/s"}}}],
-      "targets": [
-        {"expr": "up{job=\"node-exporter\",node=\"bowie\"}", "instant": true, "format": "table", "refId": "A"},
-        {"expr": "node_nfsd_server_threads{job=\"node-exporter\",node=\"bowie\"}", "instant": true, "format": "table", "refId": "B"},
-        {"expr": "rate(node_nfsd_rpc_errors_total{job=\"node-exporter\",node=\"bowie\"}[5m])", "instant": true, "format": "table", "refId": "C"}
       ]
     }
   ]
