@@ -143,7 +143,12 @@
       "title": "NFS Server Network and Errors",
       "gridPos": {"h": 8, "w": 12, "x": 0, "y": 40},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "fieldConfig": {"defaults": {"unit": "reqps", "min": 0}, "overrides": []},
+      "fieldConfig": {
+        "defaults": {"unit": "pps", "min": 0},
+        "overrides": [
+          {"matcher": {"id": "byRegexp", "options": "^RPC error.*"}, "properties": [{"id": "unit", "value": "ops"}]}
+        ]
+      },
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [
         {"expr": "rate(node_nfsd_packets_total{job=\"node-exporter\",node=\"bowie\"}[5m])", "legendFormat": "{{proto}} packets/s", "refId": "A"},
