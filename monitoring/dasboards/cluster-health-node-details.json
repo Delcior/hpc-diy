@@ -146,8 +146,8 @@
       "fieldConfig": {"defaults": {"unit": "bps", "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [
-        {"expr": "rate(node_network_receive_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[5m]) * 8", "legendFormat": "{{node}} {{device}} RX", "refId": "A"},
-        {"expr": "rate(node_network_transmit_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[5m]) * 8", "legendFormat": "{{node}} {{device}} TX", "refId": "B"}
+        {"expr": "rate(node_network_receive_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[1m]) * 8", "legendFormat": "{{node}} {{device}} RX", "refId": "A"},
+        {"expr": "rate(node_network_transmit_bytes_total{job=\"node-exporter\",device!=\"lo\",node=~\"$node\"}[1m]) * 8", "legendFormat": "{{node}} {{device}} TX", "refId": "B"}
       ]
     },
     {
@@ -159,9 +159,9 @@
       "fieldConfig": {"defaults": {"unit": "reqps"}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [
-        {"expr": "rate(node_nfs_rpcs_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{node}} RPCs", "refId": "A"},
-        {"expr": "rate(node_nfs_requests_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{node}} {{proto}} {{method}}", "refId": "B"},
-        {"expr": "rate(node_nfs_rpc_retransmissions_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{node}} retransmits", "refId": "C"}
+        {"expr": "rate(node_nfs_rpcs_total{job=\"node-exporter\",node=~\"$node\"}[1m])", "legendFormat": "{{node}} RPCs", "refId": "A"},
+        {"expr": "rate(node_nfs_requests_total{job=\"node-exporter\",node=~\"$node\"}[1m])", "legendFormat": "{{node}} {{proto}} {{method}}", "refId": "B"},
+        {"expr": "rate(node_nfs_rpc_retransmissions_total{job=\"node-exporter\",node=~\"$node\"}[1m])", "legendFormat": "{{node}} retransmits", "refId": "C"}
       ]
     },
     {
@@ -173,8 +173,8 @@
       "fieldConfig": {"defaults": {"unit": "Bps", "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [
-        {"expr": "rate(node_mountstats_nfs_total_read_bytes_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[5m])", "legendFormat": "{{node}} read", "refId": "A"},
-        {"expr": "rate(node_mountstats_nfs_total_write_bytes_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[5m])", "legendFormat": "{{node}} write", "refId": "B"}
+        {"expr": "rate(node_mountstats_nfs_total_read_bytes_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[1m])", "legendFormat": "{{node}} read", "refId": "A"},
+        {"expr": "rate(node_mountstats_nfs_total_write_bytes_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[1m])", "legendFormat": "{{node}} write", "refId": "B"}
       ]
     },
     {
@@ -185,7 +185,7 @@
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "ms", "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
-      "targets": [{"expr": "1000 * rate(node_mountstats_nfs_operations_response_time_seconds_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[5m]) / clamp_min(rate(node_mountstats_nfs_operations_requests_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[5m]), 1)", "legendFormat": "{{operation}}", "refId": "A"}]
+      "targets": [{"expr": "1000 * rate(node_mountstats_nfs_operations_response_time_seconds_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[1m]) / clamp_min(rate(node_mountstats_nfs_operations_requests_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[1m]), 1)", "legendFormat": "{{operation}}", "refId": "A"}]
     },
     {
       "id": 20,
@@ -195,7 +195,7 @@
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "ms", "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
-      "targets": [{"expr": "1000 * rate(node_mountstats_nfs_operations_queue_time_seconds_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[5m]) / clamp_min(rate(node_mountstats_nfs_operations_requests_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[5m]), 1)", "legendFormat": "{{operation}}", "refId": "A"}]
+      "targets": [{"expr": "1000 * rate(node_mountstats_nfs_operations_queue_time_seconds_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[1m]) / clamp_min(rate(node_mountstats_nfs_operations_requests_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[1m]), 1)", "legendFormat": "{{operation}}", "refId": "A"}]
     },
     {
       "id": 21,
@@ -206,8 +206,8 @@
       "fieldConfig": {"defaults": {"unit": "reqps", "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [
-        {"expr": "rate(node_nfs_rpc_retransmissions_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{node}} retransmissions", "refId": "A"},
-        {"expr": "rate(node_mountstats_nfs_operations_major_timeouts_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[5m])", "legendFormat": "{{operation}} major timeouts", "refId": "B"}
+        {"expr": "rate(node_nfs_rpc_retransmissions_total{job=\"node-exporter\",node=~\"$node\"}[1m])", "legendFormat": "{{node}} retransmissions", "refId": "A"},
+        {"expr": "rate(node_mountstats_nfs_operations_major_timeouts_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[1m])", "legendFormat": "{{operation}} major timeouts", "refId": "B"}
       ]
     },
     {
@@ -218,7 +218,7 @@
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "ms", "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
-      "targets": [{"expr": "1000 * rate(node_mountstats_nfs_operations_request_time_seconds_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[5m]) / clamp_min(rate(node_mountstats_nfs_operations_requests_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[5m]), 1e-9)", "legendFormat": "{{operation}}", "refId": "A"}]
+      "targets": [{"expr": "1000 * rate(node_mountstats_nfs_operations_request_time_seconds_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[1m]) / clamp_min(rate(node_mountstats_nfs_operations_requests_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[1m]), 1e-9)", "legendFormat": "{{operation}}", "refId": "A"}]
     },
     {
       "id": 22,
