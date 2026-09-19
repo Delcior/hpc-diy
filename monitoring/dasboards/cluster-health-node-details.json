@@ -51,13 +51,17 @@
       "fieldConfig": {
         "defaults": {"unit": "percent", "min": 0, "max": 100},
         "overrides": [
-          {"matcher": {"id": "byName", "options": "Overall usage"}, "properties": [{"id": "color", "value": {"fixedColor": "purple", "mode": "fixed"}}]}
+          {"matcher": {"id": "byName", "options": "Overall usage"}, "properties": [{"id": "color", "value": {"fixedColor": "purple", "mode": "fixed"}}]},
+          {"matcher": {"id": "byName", "options": "Load average"}, "properties": [{"id": "custom.axisPlacement", "value": "right"}, {"id": "unit", "value": "short"}, {"id": "min", "value": 0}, {"id": "color", "value": {"fixedColor": "orange", "mode": "fixed"}}]},
+          {"matcher": {"id": "byName", "options": "CPUs available"}, "properties": [{"id": "custom.axisPlacement", "value": "right"}, {"id": "unit", "value": "short"}, {"id": "min", "value": 0}, {"id": "color", "value": {"fixedColor": "blue", "mode": "fixed"}}]}
         ]
       },
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
       "targets": [
         {"expr": "100 * (1 - avg by (instance, node) (rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"}[1m])))", "legendFormat": "Overall usage", "refId": "A"},
-        {"expr": "100 * (1 - rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"}[1m]))", "legendFormat": "CPU {{cpu}}", "refId": "B"}
+        {"expr": "100 * (1 - rate(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"}[1m]))", "legendFormat": "CPU {{cpu}}", "refId": "B"},
+        {"expr": "node_load1{job=\"node-exporter\",node=~\"$node\"}", "legendFormat": "Load average", "refId": "C"},
+        {"expr": "count by (instance, node) (node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"})", "legendFormat": "CPUs available", "refId": "D"}
       ]
     },
     {
