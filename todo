@@ -6,3 +6,7 @@
 PROM_OUTPUT=/var/lib/node_exporter/textfile/tegrastats.prom python3 tegrastats_to_prom.py &
 
 we cannot read power for raspbery because it only exposes Volts, we have missing Amps 
+
+all jobs states, node state breakdown
+
+embed dboard with iframe and push to gh-pages https://community.grafana.com/t/presenting-graphs-on-a-static-site/75894
