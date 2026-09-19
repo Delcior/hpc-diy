@@ -22,6 +22,19 @@
         "includeAll": false,
         "multi": false,
         "current": {"text": "major-tom", "value": "major-tom"}
+      },
+      {
+        "name": "cpu_count",
+        "label": "CPU count",
+        "type": "query",
+        "hide": 2,
+        "datasource": {"type": "prometheus", "uid": "Prometheus"},
+        "definition": "query_result(count(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=\"$node\"}))",
+        "query": {"query": "query_result(count(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=\"$node\"}))", "refId": "StandardVariableQuery"},
+        "regex": "/^([0-9.]+)/",
+        "refresh": 1,
+        "includeAll": false,
+        "multi": false
       }
     ]
   },
@@ -45,22 +58,12 @@
     {
       "id": 9,
       "type": "timeseries",
-      "title": "CPU Load",
-      "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
+      "title": "CPU Load - $cpu_count CPUs",
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []},
       "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "single"}},
       "targets": [{"expr": "node_load1{job=\"node-exporter\",node=~\"$node\"}", "legendFormat": "Load average", "refId": "A"}]
-    },
-    {
-      "id": 10,
-      "type": "stat",
-      "title": "Number of CPUs",
-      "gridPos": {"h": 8, "w": 2, "x": 6, "y": 0},
-      "datasource": {"type": "prometheus", "uid": "Prometheus"},
-      "fieldConfig": {"defaults": {"unit": "short", "min": 0}, "overrides": []},
-      "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "center", "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}, "textMode": "value"},
-      "targets": [{"expr": "count(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=~\"$node\"})", "instant": true, "refId": "A"}]
     },
     {
       "id": 1,
