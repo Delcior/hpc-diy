@@ -163,6 +163,63 @@
         {"expr": "rate(node_nfs_requests_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{node}} {{proto}} {{method}}", "refId": "B"},
         {"expr": "rate(node_nfs_rpc_retransmissions_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{node}} retransmits", "refId": "C"}
       ]
+    },
+    {
+      "id": 18,
+      "type": "timeseries",
+      "title": "NFS Read/Write Throughput",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 46},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "Bps", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "rate(node_mountstats_nfs_total_read_bytes_total{job=\"node-exporter\",node=~\"$node\"}[5m]) * on(instance, node, export, protocol, mountaddr) group_left(mountpoint) node_mountstats_nfs_mountpoint_info{job=\"node-exporter\",node=~\"$node\",mountpoint=\"/mnt/cluster-workspace\"}", "legendFormat": "{{node}} read", "refId": "A"},
+        {"expr": "rate(node_mountstats_nfs_total_write_bytes_total{job=\"node-exporter\",node=~\"$node\"}[5m]) * on(instance, node, export, protocol, mountaddr) group_left(mountpoint) node_mountstats_nfs_mountpoint_info{job=\"node-exporter\",node=~\"$node\",mountpoint=\"/mnt/cluster-workspace\"}", "legendFormat": "{{node}} write", "refId": "B"}
+      ]
+    },
+    {
+      "id": 19,
+      "type": "timeseries",
+      "title": "NFS Operation Response Latency",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 46},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "ms", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "1000 * rate(node_mountstats_nfs_operations_response_time_seconds_total{job=\"node-exporter\",node=~\"$node\"}[5m]) / clamp_min(rate(node_mountstats_nfs_operations_requests_total{job=\"node-exporter\",node=~\"$node\"}[5m]), 1) * on(instance, node, export, protocol, mountaddr, operation) group_left(mountpoint) node_mountstats_nfs_mountpoint_info{job=\"node-exporter\",node=~\"$node\",mountpoint=\"/mnt/cluster-workspace\"}", "legendFormat": "{{operation}}", "refId": "A"}]
+    },
+    {
+      "id": 20,
+      "type": "timeseries",
+      "title": "NFS Operation Queue Time",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 54},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "ms", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "1000 * rate(node_mountstats_nfs_operations_queue_time_seconds_total{job=\"node-exporter\",node=~\"$node\"}[5m]) / clamp_min(rate(node_mountstats_nfs_operations_requests_total{job=\"node-exporter\",node=~\"$node\"}[5m]), 1) * on(instance, node, export, protocol, mountaddr, operation) group_left(mountpoint) node_mountstats_nfs_mountpoint_info{job=\"node-exporter\",node=~\"$node\",mountpoint=\"/mnt/cluster-workspace\"}", "legendFormat": "{{operation}}", "refId": "A"}]
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "NFS Retransmissions and Major Timeouts",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 54},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "reqps", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [
+        {"expr": "rate(node_nfs_rpc_retransmissions_total{job=\"node-exporter\",node=~\"$node\"}[5m])", "legendFormat": "{{node}} retransmissions", "refId": "A"},
+        {"expr": "rate(node_mountstats_nfs_operations_major_timeouts_total{job=\"node-exporter\",node=~\"$node\"}[5m]) * on(instance, node, export, protocol, mountaddr, operation) group_left(mountpoint) node_mountstats_nfs_mountpoint_info{job=\"node-exporter\",node=~\"$node\",mountpoint=\"/mnt/cluster-workspace\"}", "legendFormat": "{{operation}} major timeouts", "refId": "B"}
+      ]
+    },
+    {
+      "id": 22,
+      "type": "table",
+      "title": "NFS Mount Status",
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 62},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
+      "options": {"cellHeight": "sm", "showHeader": true},
+      "transformations": [{"id": "organize", "options": {"excludeByName": {"Time": true, "instance": true, "job": true, "__name__": true}, "renameByName": {"export": "Export", "protocol": "Protocol", "mountaddr": "Server", "mountpoint": "Mountpoint", "Value": "Mounted"}}}],
+      "targets": [{"expr": "node_mountstats_nfs_mountpoint_info{job=\"node-exporter\",node=~\"$node\",mountpoint=\"/mnt/cluster-workspace\"}", "instant": true, "format": "table", "refId": "A"}]
     }
   ]
 }
