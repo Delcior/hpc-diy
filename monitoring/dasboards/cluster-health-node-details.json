@@ -211,10 +211,20 @@
       ]
     },
     {
+      "id": 25,
+      "type": "timeseries",
+      "title": "NFS Operation Execution Time",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 62},
+      "datasource": {"type": "prometheus", "uid": "Prometheus"},
+      "fieldConfig": {"defaults": {"unit": "ms", "min": 0}, "overrides": []},
+      "options": {"legend": {"displayMode": "table", "placement": "bottom", "showLegend": true, "calcs": ["last", "max"]}, "tooltip": {"mode": "multi", "sort": "desc"}},
+      "targets": [{"expr": "1000 * rate(node_mountstats_nfs_operations_request_time_seconds_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[5m]) / clamp_min(rate(node_mountstats_nfs_operations_requests_total{job=\"node-exporter\",node=~\"$node\",export=~\".*:/mnt/cluster-workspace$\"}[5m]), 1e-9)", "legendFormat": "{{operation}}", "refId": "A"}]
+    },
+    {
       "id": 22,
       "type": "table",
       "title": "NFS Mount Status",
-      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 62},
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 70},
       "datasource": {"type": "prometheus", "uid": "Prometheus"},
       "fieldConfig": {"defaults": {"unit": "short"}, "overrides": []},
       "options": {"cellHeight": "sm", "showHeader": true},
