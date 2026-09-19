@@ -29,10 +29,10 @@
         "type": "query",
         "hide": 2,
         "datasource": {"type": "prometheus", "uid": "Prometheus"},
-        "definition": "query_result(count(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=\"$node\"}))",
-        "query": {"query": "query_result(count(node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=\"$node\"}))", "refId": "StandardVariableQuery"},
-        "regex": "/^([0-9.]+)/",
-        "refresh": 1,
+        "definition": "query_result(count by (node) (node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=\"$node\"}))",
+        "query": {"query": "query_result(count by (node) (node_cpu_seconds_total{job=\"node-exporter\",mode=\"idle\",node=\"$node\"}))", "refId": "StandardVariableQuery"},
+        "regex": "/\\s([0-9.]+)$/",
+        "refresh": 2,
         "includeAll": false,
         "multi": false
       }
