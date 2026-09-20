@@ -1,0 +1,102 @@
+---
+- name: Install Docker Engine 29.8.0
+  hosts: localhost
+  connection: local
+  become: true
+  gather_facts: true
+
+  vars:
+    docker_architectures:
+      x86_64: amd64
+      aarch64: arm64
+      armv7l: armhf
+    docker_ce_package_versions:
+      jammy: "5:29.8.0-1~ubuntu.22.04~jammy"
+      noble: "5:29.8.0-1~ubuntu.24.04~noble"
+    docker_repository_arch: "{{ docker_architectures[ansible_facts.architecture] }}"
+    docker_ce_package_version: "{{ docker_ce_package_versions[ansible_facts.distribution_release] }}"
+    docker_keyring: /etc/apt/keyrings/docker.asc
+
+  tasks:
+    - name: Ensure supported Ubuntu release and architecture
+      ansible.builtin.assert:
+        that:
+          - ansible_facts.distribution == 'Ubuntu'
+          - ansible_facts.distribution_release in docker_ce_package_versions
+          - ansible_facts.architecture in docker_architectures
+        fail_msg: >-
+          This playbook supports Ubuntu 22.04/24.04 on amd64, arm64, or armhf;
+          detected {{ ansible_facts.distribution }} {{ ansible_facts.distribution_release }}
+          on {{ ansible_facts.architecture }}.
+
+    - name: Install Docker repository prerequisites
+      ansible.builtin.apt:
+        name:
+          - ca-certificates
+          - curl
+        state: present
+        update_cache: true
+
+    - name: Ensure APT keyring directory exists
+      ansible.builtin.file:
+        path: "{{ docker_keyring | dirname }}"
+        state: directory
+        mode: "0755"
+
+    - name: Install Docker repository signing key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: "{{ docker_keyring }}"
+        mode: "0644"
+        force: true
+
+    - name: Configure the official Docker APT repository
+      ansible.builtin.apt_repository:
+        repo: >-
+          deb [arch={{ docker_repository_arch }} signed-by={{ docker_keyring }}]
+          https://download.docker.com/linux/ubuntu
+          {{ ansible_facts.distribution_release }} stable
+        filename: docker
+        state: present
+        update_cache: true
+
+    - name: Remove conflicting distribution Docker packages
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - docker-doc
+          - docker-compose
+          - podman-docker
+          - containerd
+          - runc
+        state: absent
+        purge: true
+
+    - name: Install Docker Engine and supported plugins
+      ansible.builtin.apt:
+        name:
+          - "docker-ce={{ docker_ce_package_version }}"
+          - "docker-ce-cli={{ docker_ce_package_version }}"
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+        allow_downgrade: true
+        update_cache: true
+
+    - name: Ensure Docker is enabled and running
+      ansible.builtin.systemd:
+        name: docker
+        enabled: true
+        state: started
+
+    - name: Read installed Docker version
+      ansible.builtin.command: docker --version
+      register: docker_version
+      changed_when: false
+
+    - name: Confirm Docker Engine version
+      ansible.builtin.assert:
+        that:
+          - docker_version.stdout is search('Docker version 29\\.8\\.0')
+        fail_msg: "Expected Docker Engine 29.8.0, got: {{ docker_version.stdout }}"
